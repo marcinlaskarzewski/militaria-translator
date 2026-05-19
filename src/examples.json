@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "purpose": "Kuratorowane przykłady treści per typ - PODWÓJNA rola: (1) pomoc demonstracyjna dla pracownika nietechnicznego, (2) stały zestaw benchmarkowy do ewaluacji jakości (te same próbki = porównywalność wyników między uruchomieniami).",
+    "design": "Każdy przykład celowo zawiera terminy z glossary.json LUB konstrukcje gdzie generyczny translator pada (dwuznaczność, konwencja rynku, ryzyko prawne). To NIE są losowe teksty - to próbki dobrane tak, by demonstrowały przewagę warstwy kontekstowej.",
+    "scope": "Świadomie statyczne, nie generowane AI. Zadanie to narzędzie do TŁUMACZENIA, nie generowania treści - kuratorowany zestaw to pomoc demo i benchmark, nie druga funkcja produktu."
+  },
+  "examples": {
+    "produktowe_dlugie": "Karabinek pneumatyczny zasilany sprężonym powietrzem (PCP) o kalibrze 5,5 mm. Składana kolba z regulowaną stopką, magazynek rotacyjny na 10 śrutów oraz lufa o długości 600 mm zapewniają wysoką celność na dystansie do 50 metrów. Konstrukcja oparta na sprawdzonym zamku cylindrycznym, z fabrycznie zamontowaną szyną montażową pod celownik optyczny.",
+    "produktowe_krotkie": "Tabela rozmiarów kabury udowej:\nRozmiar S - obwód uda 45-52 cm\nRozmiar M - obwód uda 52-60 cm\nRozmiar L - obwód uda 60-68 cm\nMateriał: Cordura 1000D. Pasuje do pistoletów kompaktowych i pełnowymiarowych.",
+    "seo": "Repliki ASG karabinków szturmowych - sklep z replikami do airsoftu. Magazynki, kolby, akcesoria taktyczne.",
+    "poradniki": "Jak dobrać pierwszą replikę ASG dla początkującego? Zacznij od karabinka typu AEG - jest niezawodny i prosty w obsłudze. Zwróć uwagę na pojemność magazynka oraz materiał kolby: wersje z polimeru są lżejsze, metalowe trwalsze. Pamiętaj, że replika ASG nie jest bronią palną, ale na strzelnicy obowiązują te same zasady bezpieczeństwa.",
+    "marketingowe": "Tylko w ten weekend! Do każdego karabinka ASG magazynek dodatkowy oraz 2000 kulek BB gratis. Wyposaż się przed sezonem - oferta ważna do niedzieli lub wyczerpania zapasów.",
+    "systemowe_ui": "Dodaj do koszyka",
+    "informacyjne": "Czy do zakupu repliki ASG potrzebne są uprawnienia? Repliki ASG nie są bronią palną w rozumieniu ustawy, dlatego do ich zakupu nie są wymagane pozwolenia. Sprzedaż prowadzimy wyłącznie osobom pełnoletnim.",
+    "prawne": "§7. Odstąpienie od umowy. 1. Konsument może odstąpić od umowy w terminie 14 dni bez podania przyczyny, zgodnie z ustawą z dnia 30 maja 2014 r. o prawach konsumenta (Dz.U. 2014 poz. 827). 2. Prawo odstąpienia nie przysługuje w odniesieniu do amunicji oraz towarów dostarczanych w zapieczętowanym opakowaniu, których po otwarciu nie można zwrócić ze względów bezpieczeństwa.",
+    "infografiki": "3 KROKI DO CELNEGO STRZAŁU\n1. Stabilna postawa\n2. Kontrola oddechu\n3. Płynne ściągnięcie języka spustowego",
+    "ogolne": "Zestaw zawiera karabinek, dwa magazynki, ładowarkę oraz instrukcję obsługi w języku polskim.",
+    "wlasny_prompt": "Wpisz własny tekst albo skorzystaj z przykładu z innej kategorii."
+  }
+}
