@@ -1,0 +1,8 @@
+{
+  "name": "militaria-translator",
+  "version": "1.0.0",
+  "description": "Prototyp narzędzia tłumaczeniowego e-commerce świadomego kontekstu - Militaria.pl",
+  "main": "proxy.js",
+  "scripts": { "start": "node proxy.js" },
+  "engines": { "node": ">=18" }
+}
