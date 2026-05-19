@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Militaria.pl - Tłumacz treści e-commerce</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <h1>Tłumacz treści <span>Militaria.pl</span></h1>
+  <p class="sub">Tłumaczenie świadome kontekstu - inaczej opis produktu, inaczej przycisk, inaczej regulamin.</p>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" data-mode="single">Pojedynczy tekst</button>
+    <button class="tab" data-mode="batch">Tryb masowy (CSV)</button>
+    <button class="tab" data-mode="doc">Długi dokument</button>
+  </div>
+
+  <section class="panel" id="form">
+    <div class="row">
+      <label>
+        <span>1. Rodzaj treści</span>
+        <select id="contentType"></select>
+        <small id="typeHint" class="hint"></small>
+      </label>
+      <label>
+        <span>2. Język docelowy</span>
+        <select id="lang"></select>
+      </label>
+    </div>
+
+    <label id="customWrap" class="hidden">
+      <span>Twoja instrukcja dla tłumacza</span>
+      <textarea id="customInstruction" rows="2" placeholder="Np. Tłumacz bardzo formalnie, zachowaj wszystkie liczby..."></textarea>
+    </label>
+
+    <div id="singleMode">
+      <label>
+        <span class="lbl-row">3. Tekst po polsku
+          <button type="button" id="exampleBtn" class="link-btn" title="Wstaw przykładowy tekst dla wybranej kategorii">Wstaw przykład ↧</button>
+        </span>
+        <textarea id="sourceText" rows="7" placeholder="Wklej tutaj polski tekst do przetłumaczenia... albo kliknij &quot;Wstaw przykład&quot; powyżej."></textarea>
+        <small class="hint"><span id="charCount">0</span> / 12000 znaków</small>
+      </label>
+
+      <div class="opts">
+        <label class="check"><input type="checkbox" id="useGlossary" checked> Użyj słownika militarnego</label>
+        <label class="check"><input type="checkbox" id="compare" checked> Pokaż porównanie ze zwykłym tłumaczem</label>
+        <label class="check"><input type="checkbox" id="doEvaluate"> Oceń jakość (wolniejsze, +ocena ekspercka)</label>
+      </div>
+
+      <button id="translateBtn">Przetłumacz</button>
+    </div>
+
+    <div id="batchMode" class="hidden">
+      <label>
+        <span class="lbl-row">3. Plik CSV
+          <button type="button" id="sampleCsvBtn" class="link-btn" title="Pobierz przykładowy plik CSV">Pobierz przykładowy CSV ↧</button>
+        </span>
+        <input type="file" id="csvFile" accept=".csv,text/csv">
+        <small class="hint">Plik CSV z jedną kolumną tekstu (pierwszy wiersz = nagłówek). Limit prototypu: <b>25 wierszy</b> - w produkcji byłaby kolejka zadań.</small>
+      </label>
+      <label class="check" style="margin-bottom:14px"><input type="checkbox" id="batchGlossary" checked> Użyj słownika militarnego</label>
+      <button id="batchBtn" disabled>Przetłumacz plik</button>
+      <div id="batchProgress" class="hidden">
+        <div class="progress-bar"><div id="progressFill"></div></div>
+        <small class="hint" id="progressText"></small>
+      </div>
+    </div>
+
+    <div id="docMode" class="hidden">
+      <label>
+        <span class="lbl-row">3. Dokument (regulamin, polityka, długi opis)
+          <button type="button" id="sampleDocBtn" class="link-btn" title="Pobierz przykładowy regulamin">Pobierz przykład ↧</button>
+        </span>
+        <input type="file" id="docFile" accept=".txt,text/plain">
+        <small class="hint">Plik <b>.txt</b>. Długi tekst (np. regulamin powyżej limitu 12000 znaków) zostanie automatycznie podzielony na sekcje (po §, paragrafach), przetłumaczony z zachowaniem spójności terminologii i złożony z powrotem. Word/PDF: patrz "dalszy rozwój" w README.</small>
+      </label>
+      <label class="check" style="margin-bottom:14px"><input type="checkbox" id="docGlossary"> Użyj słownika militarnego</label>
+      <button id="docBtn" disabled>Przetłumacz dokument</button>
+      <div id="docProgress" class="hidden">
+        <div class="progress-bar"><div id="docProgressFill"></div></div>
+        <small class="hint" id="docProgressText"></small>
+      </div>
+    </div>
+
+    <div id="error" class="error hidden"></div>
+  </section>
+
+  <section id="docResults" class="panel hidden">
+    <div id="docReviewBanner" class="banner hidden"></div>
+    <div class="result-head">
+      <h2>Przetłumaczony dokument</h2>
+      <div>
+        <button class="copy" data-target="docOut">Kopiuj</button>
+        <button class="copy" id="downloadDoc">Pobierz .txt ↧</button>
+      </div>
+    </div>
+    <div id="docMeta" class="matched"></div>
+    <div id="docOut" class="out"></div>
+  </section>
+
+  <section id="batchResults" class="panel hidden">
+    <div class="result-head">
+      <h2>Wyniki tłumaczenia masowego</h2>
+      <button class="copy" id="downloadCsv">Pobierz CSV ↧</button>
+    </div>
+    <div id="batchTableWrap"></div>
+  </section>
+
+  <section id="results" class="hidden">
+    <div id="reviewBanner" class="banner hidden"></div>
+
+    <div class="result-grid">
+      <div class="panel result">
+        <div class="result-head">
+          <h2>Tłumaczenie kontekstowe</h2>
+          <button class="copy" data-target="ctxOut">Kopiuj</button>
+        </div>
+        <div id="ctxOut" class="out"></div>
+        <div id="matched" class="matched hidden"></div>
+      </div>
+
+      <div class="panel result" id="genWrap">
+        <div class="result-head">
+          <h2>Zwykły tłumacz <small>(dla porównania)</small></h2>
+          <button class="copy" data-target="genOut">Kopiuj</button>
+        </div>
+        <div id="genOut" class="out muted"></div>
+      </div>
+    </div>
+
+    <div id="evalBox" class="panel eval hidden">
+      <h2>Ocena jakości <small>(niezależny przebieg modelu - sędzia nie wie które tłumaczenie jest które)</small></h2>
+      <div id="evalContent"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Prototyp rekrutacyjny · Militaria.pl · silnik: Claude (Anthropic) · tłumaczenie wymaga akceptacji człowieka
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
