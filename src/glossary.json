@@ -1,0 +1,170 @@
+{
+  "_meta": {
+    "purpose": "Proof-of-mechanism glosariusza branżowego, NIE kompletny słownik produkcyjny.",
+    "rationale": "Świadoma decyzja: 10 terminów których tłumaczenie jest pewne i zweryfikowane (EN/DE) > 50 zmyślonych. Błędny termin militarny wstrzyknięty do promptu jest GORSZY niż brak glosariusza, bo model wtedy z pewnością produkuje błąd. W produkcji glosariusz budowany z realnego feedu produktów Militaria + walidacja native speakera per rynek.",
+    "design": "Każdy wpis ma 'commonMistake' = potoczne/dosłowne tłumaczenie które generyczny translator wybierze, a które w kontekście militarnym jest błędem. To dokładnie ten punkt gdzie narzędzie bije generyk - i to pokazuje porównanie side-by-side.",
+    "verified": "EN-US/EN-UK/DE zweryfikowane (terminologia bronioznawcza powszechna). FR/CS częściowo. UK/RO/HU/FI oznaczone do walidacji native - patrz README ograniczenia."
+  },
+  "terms": [
+    {
+      "pl": "łuska",
+      "context": "część naboju (pl. potocznie też: łuska ryby/rany)",
+      "commonMistake": "shell / scale",
+      "translations": {
+        "en-us": "casing",
+        "en-uk": "case",
+        "de": "Hülse",
+        "fr": "douille",
+        "uk": "гільза",
+        "ro": "tub cartuș",
+        "cs": "nábojnice",
+        "hu": "hüvely",
+        "fi": "hylsy"
+      }
+    },
+    {
+      "pl": "magazynek",
+      "context": "wymienny pojemnik na amunicję (NIE: czasopismo / sklep)",
+      "commonMistake": "magazine (jako czasopismo) / little shop",
+      "translations": {
+        "en-us": "magazine",
+        "en-uk": "magazine",
+        "de": "Magazin",
+        "fr": "chargeur",
+        "uk": "магазин",
+        "ro": "încărcător",
+        "cs": "zásobník",
+        "hu": "tár",
+        "fi": "lipas"
+      }
+    },
+    {
+      "pl": "zamek",
+      "context": "mechanizm ryglowy broni (NIE: zamek błyskawiczny / budowla / kłódka)",
+      "commonMistake": "lock / castle / zipper",
+      "translations": {
+        "en-us": "bolt",
+        "en-uk": "bolt",
+        "de": "Verschluss",
+        "fr": "culasse",
+        "uk": "затвор",
+        "ro": "închizător",
+        "cs": "závěr",
+        "hu": "zár",
+        "fi": "lukko"
+      }
+    },
+    {
+      "pl": "kolba",
+      "context": "tylna część broni opierana o ramię (NIE: kolba kukurydzy / kolba chemiczna)",
+      "commonMistake": "corn cob / flask",
+      "translations": {
+        "en-us": "stock",
+        "en-uk": "stock",
+        "de": "Schaft",
+        "fr": "crosse",
+        "uk": "приклад",
+        "ro": "pat",
+        "cs": "pažba",
+        "hu": "tusa",
+        "fi": "tukki"
+      }
+    },
+    {
+      "pl": "lufa",
+      "context": "przewód przez który przemieszcza się pocisk",
+      "commonMistake": "muzzle (to wylot, nie cała lufa)",
+      "translations": {
+        "en-us": "barrel",
+        "en-uk": "barrel",
+        "de": "Lauf",
+        "fr": "canon",
+        "uk": "ствол",
+        "ro": "țeavă",
+        "cs": "hlaveň",
+        "hu": "cső",
+        "fi": "piippu"
+      }
+    },
+    {
+      "pl": "iglica",
+      "context": "element uderzający w spłonkę naboju",
+      "commonMistake": "spire / steeple (iglica wieży)",
+      "translations": {
+        "en-us": "firing pin",
+        "en-uk": "firing pin",
+        "de": "Schlagbolzen",
+        "fr": "percuteur",
+        "uk": "ударник",
+        "ro": "percutor",
+        "cs": "zápalník",
+        "hu": "ütőszeg",
+        "fi": "iskuri"
+      }
+    },
+    {
+      "pl": "spłonka",
+      "context": "element zapłonowy naboju",
+      "commonMistake": "fuse / detonator",
+      "translations": {
+        "en-us": "primer",
+        "en-uk": "primer",
+        "de": "Zündhütchen",
+        "fr": "amorce",
+        "uk": "капсуль",
+        "ro": "capsă",
+        "cs": "zápalka",
+        "hu": "csappantyú",
+        "fi": "nalli"
+      }
+    },
+    {
+      "pl": "celownik",
+      "context": "przyrząd celowniczy (mechaniczny lub optyczny)",
+      "commonMistake": "viewfinder (aparat) / target",
+      "translations": {
+        "en-us": "sight",
+        "en-uk": "sight",
+        "de": "Visier",
+        "fr": "viseur",
+        "uk": "приціл",
+        "ro": "lunetă/cătare",
+        "cs": "mířidlo",
+        "hu": "irányzék",
+        "fi": "tähtäin"
+      }
+    },
+    {
+      "pl": "replika ASG",
+      "context": "replika broni do airsoft, NIE broń palna",
+      "commonMistake": "replica weapon / fake gun (sugeruje broń palną)",
+      "translations": {
+        "en-us": "airsoft replica",
+        "en-uk": "airsoft replica",
+        "de": "Airsoft-Replika",
+        "fr": "réplique airsoft",
+        "uk": "репліка ASG (страйкбол)",
+        "ro": "replică airsoft",
+        "cs": "airsoftová replika",
+        "hu": "airsoft replika",
+        "fi": "airsoft-replika"
+      }
+    },
+    {
+      "pl": "kabura",
+      "context": "futerał na broń krótką noszony przy ciele",
+      "commonMistake": "case / pouch (zbyt ogólne)",
+      "translations": {
+        "en-us": "holster",
+        "en-uk": "holster",
+        "de": "Holster",
+        "fr": "étui",
+        "uk": "кобура",
+        "ro": "toc pistol",
+        "cs": "pouzdro",
+        "hu": "pisztolytáska",
+        "fi": "kotelo"
+      }
+    }
+  ]
+}
