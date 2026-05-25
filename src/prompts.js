@@ -84,10 +84,12 @@ NIE: nie kopiuj polskich gier słownych dosłownie - przełóż efekt. Nie skła
   systemowe_ui: {
     label: 'Systemowe / UI (checkout, przyciski, banery, komunikaty)',
     glossary: false,
+    charBudget: { target: 30, hardMax: 45 },
     prompt: `TYP: Mikrokopia interfejsu - przycisk, etykieta, komunikat checkout, baner.
 TON: maksymalnie zwięzły, konwencja UI rynku docelowego (użyj utartych formuł danego rynku, np. DE "Jetzt kaufen", nie kalka).
-FORMA: KRÓTKO. Przycisk = ile zwykle ma znaków na tym rynku. Komunikat błędu = ton spokojny, instruktażowy.
-NIE: nie wydłużaj ponad potrzebę (UI się rozjedzie), nie tłumacz dosłownie jeśli rynek ma własny standard ("Cart" vs "Basket" w EN-UK vs EN-US).`
+FORMA: KRÓTKO. Cel długości: do 30 znaków (przyciski/etykiety), absolutny max 45 znaków. Jeśli polski oryginał był krótszy niż 30 znaków, Twój wynik MUSI również być ≤30 znaków - długie tłumaczenie rozwala layout UI. Dla dłuższych komunikatów (toast, error) ton spokojny, instruktażowy.
+PRIORYTET: zwięzłość > dosłowność. Lepiej oddać sens w 25 znakach niż wiernie w 60.
+NIE: nie wydłużaj ponad potrzebę (UI się rozjedzie), nie tłumacz dosłownie jeśli rynek ma własny standard ("Cart" vs "Basket" w EN-UK vs EN-US), nie dodawaj wykrzykników/zdań tam gdzie był jeden zwięzły zwrot.`
   },
   informacyjne: {
     label: 'Informacyjne (FAQ, O nas, płatności)',
@@ -104,7 +106,8 @@ NIE: nie zmieniaj faktów (terminy, koszty, warunki), nie skracaj odpowiedzi FAQ
     prompt: `TYP: Treść prawna - regulamin, polityka prywatności, RODO, informacja o bezpieczeństwie.
 TON: precyzyjny, formalny, ZERO kreatywności i ZERO transkreacji.
 FORMA: zachowaj numerację paragrafów/punktów 1:1. Terminologia prawna spójna w całym dokumencie.
-KRYTYCZNE: polskie odwołania prawne (ustawa o broni i amunicji, RODO/Dz.U.) NIE mają odpowiednika 1:1 w prawie rynku docelowego. Tłumacz je dosłownie i ZACHOWAJ oryginalne odwołanie w nawiasie - NIE podmieniaj na lokalny akt prawny (to nie jest rola tłumacza, to ryzyko prawne).
+JEDEN TERMIN = JEDNO TŁUMACZENIE: jeśli pojęcie ma standardowy odpowiednik w prawie rynku docelowego (np. PL "pozwolenie na broń" -> DE "Waffenbesitzkarte"), użyj WYŁĄCZNIE jego. NIE wymyślaj alternatyw typu "X oder Y". NIE wstawiaj oryginalnego polskiego terminu w nawiasie. NIE komentuj wyboru.
+WYJĄTEK - nazwy aktów prawnych: TYLKO konkretne nazwy własne polskich aktów (np. "Dz.U. 2018 poz. 1234", "RODO art. 13", "ustawa z dnia X o broni i amunicji") zostają DOSŁOWNIE z oryginalnym brzmieniem - bo nie istnieją w prawie rynku docelowego. Pojęcia generyczne (pozwolenie, umowa, termin, kupujący) tłumaczysz normalnie standardowym terminem rynku.
 NIE: nie interpretuj prawa, nie "poprawiaj" zapisów, nie lokalizuj jednostek czasu/odstąpienia (14 dni zostaje 14 dni).`
   },
   infografiki: {
@@ -139,64 +142,106 @@ NIE: nie dodawaj specjalizacji której użytkownik nie wybrał.`
 const MARKET_PROFILES = {
   'en-us': {
     label: 'angielski (USA)',
-    prompt: `RYNEK: USA (en-US). Formalność: bezpośrednia, "you", energiczna.
-KONWENCJE: jednostki imperialne (cale/funty) obok metrycznych w nawiasie, data MM/DD/YYYY, $ przed kwotą. Pisownia US (color, caliber).
-RYZYKO PRAWNE: rynek broni liberalny ale platformy (Google/Meta ADS) restrykcyjne - w treści marketingowej unikaj imperatywu zakupu broni.`
+    prompt: `RYNEK: USA (en-US). Audience: tactical professional, LE (law enforcement), military, first responder. Ton: profesjonalny premium, bezpośredni "you", bez hype.
+KONWENCJE: $X.XX przed liczbą, MM/DD/YYYY, imperialne (in/lb/oz) z metryką w nawiasie dla balistyki/optyki. Pisownia US: color, armor, defense, caliber, gray, license. Cart NIE Basket, pants NIE trousers, flashlight NIE torch.
+TERMINOLOGIA: zachowaj akronimy taktyczne (MOLLE, EDC, IFAK, AR-15, NVG, LE, 2A, NIJ, FR, MultiCam) i nazwy brandów (Glock, HK, FN, 5.11, Crye, Arc'teryx LEAF).
+WYRÓŻNIKI: Veteran-Owned, Made in USA, LE/First Responder discount - eksponuj jeśli sklep posiada.
+2A I BROŃ: język profesjonalny "duty gear / hunting / sport shooting", NIE polityczny. Subtelnie. Sklepy militaria są zwykle stonowane.
+TON: "tactical-grade", "duty-rated", "mission-ready" zamiast hype. Krótkie zdania (8-15 słów). CTA 8-12 znaków ("Add to Cart", "Shop Now").
+NIE: brytyjskie wyrażenia (Basket/trousers/colour), wykrzykniki spamem, tanio budowana urgency, agresywny alpha-bro ton.`
   },
   'en-uk': {
     label: 'angielski (UK)',
     legalRisk: true, // Offensive Weapons Act - treść o broni wymaga weryfikacji
-    prompt: `RYNEK: Wielka Brytania (en-GB). Formalność: uprzejma, lekko bardziej formalna niż US.
-KONWENCJE: jednostki metryczne, data DD/MM/YYYY, £ przed kwotą. Pisownia brytyjska (colour, calibre). "Basket" nie "Cart", "Trousers" nie "Pants".
-RYZYKO PRAWNE: WYSOKIE. UK ma surowe prawo o broni/nożach (Offensive Weapons Act). W treści o broni białej/replikach zachowaj neutralny, opisowy ton bez zachęty do zakupu/użycia.`
+    prompt: `RYNEK: Wielka Brytania (en-GB).
+TON: funkcjonalny, profesjonalny, zwięzły. Bez superlatywów ("the best", "ultimate"). Wzorzec "battle tested", "trusted by", "Armed Forces grade".
+KONWENCJE: £X.XX, DD/MM/YYYY, metryczne (cm, kg). UK spelling: colour, calibre, defence, organisation, centre, tyre.
+SŁOWNICTWO: "Basket" preferowane (lub "Cart" - Shopify OK). "Trousers" NIE "pants". "Torch" NIE "flashlight". "Jumper" NIE "sweater". "Boot" NIE "trunk".
+TERMINOLOGIA WOJSKOWA (keep-as-is): MTP, DPM, PCS, CS95, UBACS, PLCE, MOD, SAS, SBS, NATO, NSN, Para, Recce, RAF, RM, BFPO.
+TRUST SIGNALS: dodawaj gdy w oryginale ("trading since YYYY", "same day dispatch", "free UK delivery", "X day returns").
+RYZYKO PRAWNE: Offensive Weapons Act 2019 + Bladed Articles - opisy noży/replik/wiatrówek tonem neutralnym, NIE "deadly", "lethal", "combat ready" przy ostrzach. Restricted shipping disclaimers gdy w oryginale.
+NIE: amerykanizmy (pants/flashlight/sweater/cart only/color/defense), superlatywy, ozdobniki, ALL CAPS poza nagłówkami CTA.
+DŁUGOŚĆ: tytuł 5-10 słów, meta 15-35 słów, opis produktu max 80% długości oryginału PL.`
   },
   'de': {
     label: 'niemiecki',
     legalRisk: true, // Waffengesetz - treść o broni wymaga weryfikacji prawnej native
-    prompt: `RYNEK: Niemcy (de-DE). Formalność: WYSOKA. Forma grzecznościowa "Sie" zawsze (chyba że marketingowy do młodej grupy - wtedy świadomie "du"). Rzeczowość ceniona ponad hype.
-KONWENCJE: jednostki metryczne, data DD.MM.YYYY, kwota "19,99 €" (przecinek, € po liczbie). Rzeczowniki z wielkiej litery.
-RYZYKO PRAWNE: BARDZO WYSOKIE. Waffengesetz - ścisłe przepisy o broni. W opisach broni/amunicji/replik zachowaj neutralny, rzeczowy ton bez zachęty. Tłumacz wiernie, nie interpretuj statusu prawnego produktu.`
+    prompt: `RYNEK: Niemcy (de-DE). Audience: Bundeswehr-Personal, Polizei, Behörden, Outdoor/Bushcraft, Sportschützen. Ton: rzeczowy, kompetentny "Behördenausrüster", bez hype.
+KONWENCJE: cena "19,99 €" (przecinek + € po liczbie), data DD.MM.YYYY, metryka (cm/kg/mm). RZECZOWNIKI ZAWSZE Z WIELKIEJ LITERY (Militärkleidung, Ausrüstung, Warenkorb) - pułapka #1 tłumaczy MT.
+FORMALNOŚĆ: Sie default (bezpiecznie), Du tylko dla sklepów mass-market jak ASMC (gdy oryginał PL jest casualowy "Ty"). Nigdy nie mieszać Sie/Du w jednym tekście.
+TERMINOLOGIA UI: "Warenkorb" (NIE Cart/Korb), "In den Warenkorb" jako CTA produkt, "Zur Kasse" checkout, "Versandkostenfrei" badge, "Bestellen" general.
+KEEP-AS-IS: BW, Bundeswehr, MOLLE, EDC, IFAK, MTP, MultiCam, NATO, WBK (Waffenbesitzkarte), Waffengesetz, WaffG, 5.11, Glock, HK, Carinthia, Haix, Tasmanian Tiger.
+RYZYKO PRAWNE BARDZO WYSOKIE: Waffengesetz ściśle reguluje broń. Przy broni/amunicji/replikach - neutralny opisowy ton bez zachęty do zakupu/użycia. Jeśli PL wspomina pozwolenie - tłumacz wiernie ("Erwerbsberechtigung erforderlich"), NIE interpretuj statusu prawnego produktu, NIE dodawaj "freie Waffe" jeśli nie ma w oryginale.
+USP DE: "Behördenrabatt" (rabat dla służb), "seit YYYY" (tradycja), "Versandkostenfrei ab X€", "Kostenlose Rücksendung", "Trusted Shops" - eksponuj jeśli sklep źródłowy posiada.
+NIE: wykrzykniki agresywne ("Jetzt kaufen!!"), anglicyzmy gdy jest pełne DE (Sale->Angebot, Cart->Warenkorb), małe litery w rzeczownikach, em-dash (używaj "-").`
   },
   'fr': {
     label: 'francuski',
     legalRisk: true, // catégories A-D - treść o broni wymaga weryfikacji
-    prompt: `RYNEK: Francja (fr-FR). Formalność: "vous" zawsze w treści formalnej/produktowej. Elegancja języka ceniona.
-KONWENCJE: jednostki metryczne, data DD/MM/YYYY, kwota "19,99 €". Spacja przed : ; ! ? (typografia francuska). Akademia Francuska - unikaj zbędnych anglicyzmów.
-RYZYKO PRAWNE: WYSOKIE. Francja ściśle reguluje broń (catégories A-D). W treści o broni zachowaj neutralny, opisowy ton bez zachęty do zakupu/użycia.`
+    prompt: `RYNEK: Francja (fr-FR). Audience: militaires, FDO (police/gendarmerie/armée), tireurs sportifs, chasseurs, passionnés. Ton: formalny "vous" zawsze, elegancki, stonowany, "qualité pro" / "spécialiste" (NIE "best"/"top").
+KONWENCJE: jednostki metryczne, data DD/MM/YYYY, kwota "19,99 €" (przecinek + spacja + symbol po liczbie), kaliber "cal. 4,5 mm", "22 LR". Typografia FR TWARDA: spacja non-breaking przed : ; ! ? (np. "Livraison gratuite !").
+UI/CTA: "panier" (NIE cart/basket), "Voir", "Ajouter au panier", "En savoir plus", "Découvrir", "Commander", "Paiement sécurisé".
+TERMINOLOGIA keep-as-is: MOLLE, EDC, IFAK, Picatinny, NATO, FDO, GIGN, RAID, Airsoft, Glock, HK, Beretta, FN, Famas, MultiCam, OD, cal., 22 LR, 9x19. Nazwy brandów nigdy nie tłumacz.
+RYZYKO PRAWNE: WYSOKIE. Francja ma 4 kategorie broni (A/B/C/D) - przy broni kat. B+ ZAWSZE wymieniaj kategorię w opisie. Ton opisowy/neutralny bez zachęty do zakupu/użycia. Tłumacz wiernie status prawny, nie interpretuj.
+TRUST: eksponuj "Depuis YYYY", ISO 9001, "Livraison offerte", "Retour gratuit", "Paiement sécurisé" jeśli sklep podaje. Académie Française - unikaj zbędnych anglicyzmów ale Airsoft/Holster/Outdoor zachowaj.
+NIE: tu/toi, wykrzykniki spamem, ALL-CAPS poza nazwami brandów, emoji w nagłówkach, pomijanie kategorii prawnej, cart/basket/shopping w widocznym UI.`
   },
   'uk': {
     label: 'ukraiński',
     lowResource: true, // model słabszy -> back-translation w evaluate.js
-    prompt: `RYNEK: Ukraina (uk-UA). Formalność: uprzejma, forma "Ви" w treści formalnej.
-KONWENCJE: jednostki metryczne, data DD.MM.YYYY, hrywna (₴) lub zgodnie z oryginałem. Język UKRAIŃSKI, nie rosyjski - to istotne kulturowo, nie myl alfabetów/leksyki z rosyjskim.
-RYZYKO PRAWNE: kontekst wojenny - militaria mają realne zastosowanie. Ton rzeczowy, bez trywializacji ani patosu.`
+    prompt: `RYNEK: Ukraina (uk-UA). Audience: ЗСУ/ТРО, tactical professional, cywilni obrońcy. Ton: rzeczowy, uprzejma forma "Ви", bez patosu, bez trywializacji. Kontekst: wojna od 24.02.2022 - militaria operatywne, nie hobby.
+KONWENCJE: metryczne (mm, cm, kg), DD.MM.YYYY, "925,00 ₴" lub "2 250 грн" (przecinek dziesiętny, spacja tysiące, symbol PO liczbie). UKRAIŃSKA cyrylica (і, ї, є, ґ) - NIGDY rosyjska (ы, э, ё, ъ).
+TERMINOLOGIA: zachowaj akronimy taktyczne (MOLLE, EDC, IFAK, NATO, AR-15, MultiCam) i ukraińskie wojskowe (ЗСУ, ТРО, АТО, ООС, СХП, піксель ЗСУ, мультикам, олива, койот, плитоноска, бронежилет, шолом, берці, шеврон). Brand names łacinka (M-Tac, Helikon, 5.11, Pentagon, Crye).
+UI/UX: "Кошик" (NIE "Корзина"!), "Купити"/"Замовити"/"В кошик", "Нова Пошта" jako kurier #1, "Оплата при отриманні".
+WYRÓŻNIKI: "Виробництво в Україні" / "Власне виробництво" = silny trust signal po 2022, eksponuj jeśli sklep ma. "Воєнторг" keep as is (ukraiński synonim "tactical store").
+RYZYKO PRAWNE: kontekst wojenny - militaria mają REALNE zastosowanie operacyjne. Opis broni/amunicji/oholoshchenej (СХП) tłumacz rzeczowo, bez zachęty i bez trywializacji.
+NIE: rosyjski leksykon (Корзина/Сейчас/Спасибо), "extreme fun"/"adventure"/"Halloween", patos ("broniący ojczyzny!!!"), wykrzykniki spamem, pominięcie kategorii СХП.`
   },
   'ro': {
     label: 'rumuński',
     lowResource: true,
-    prompt: `RYNEK: Rumunia (ro-RO). Formalność: forma grzecznościowa "dumneavoastră" w treści formalnej.
-KONWENCJE: jednostki metryczne, data DD.MM.YYYY, lej (RON) lub zgodnie z oryginałem. Zachowaj diakrytykę rumuńską (ă, î, â, ș, ț).
-RYZYKO PRAWNE: UE - przepisy o broni zharmonizowane, lokalne restrykcje istnieją. Ton neutralny, opisowy.`
+    prompt: `RYNEK: Rumunia (ro-RO). Audience: army-surplus + airsoft + outdoor/vânătoare (trzy nakładające się segmenty). Ton: rzeczowo-handlowy, neutralny-formalny przez tryb rozkazujący 2.os l.mn ("Vezi", "Descoperă"), bez bezpośredniego "tu", bez wykrzykników.
+KONWENCJE: jednostki metryczne, data DD.MM.YYYY, kwota PRZED jednostką z odstępem ("150 RON" lub "584,63 Lei"), przecinek = dziesiętny, kropka = tysiąc. Diakrytyka rumuńska OBOWIĄZKOWA (ă, î, â, ș, ț) - jej brak = sygnał taniej lokalizacji dla klienta. Koszyk = "Coș" / "Adaugă în coș". Skrót grzeczności "dvs." w copy krótkim (NIE rozwijaj do "dumneavoastră" poza regulaminem/checkout).
+TERMINOLOGIA: zachowaj akronimy taktyczne (MOLLE, EDC, IFAK, MultiCam, MTP, NATO, MApN, Picatinny, NVG) i brandy (Glock, HK, FN, Beretta, AR-15, Magpul, Helikon, Mil-Tec, 5.11, Crye). Przyswojone słowa zostają: airsoft, paintball, outdoor, tactical. AK/Kalashnikov lokalnie wycofany - można użyć, bez epatowania.
+WYRÓŻNIKI RO: "Transport Gratuit peste [próg] RON" = najmocniejszy trust trigger - eksponuj w meta/nad fold. Polityka RETUR eksponowana (badge "Retur 30 zile"). Airsoft = osobna ogromna kategoria, często lider sklepu.
+CTA native: "Adaugă în coș" (14 znaków - daj luz w przyciskach), "Vezi detalii", "Comandă", "Cumpără", "În stoc", "Livrare gratuită".
+RYZYKO PRAWNE: UE - przepisy o broni zharmonizowane, lokalne restrykcje istnieją (broń palna licencjonowana, airsoft liberalne). Ton neutralny, opisowy, bez zachęty do użycia. MApN nie tłumaczyć.
+NIE: brak diakrytyki, "RON 150" / "Lei 150" (jednostka MUSI być PO liczbie), wykrzykniki spamem, kalka 1:1 z PL bez uwzględnienia rodzajnika postpozycyjnego, tłumaczenie "airsoft/paintball/outdoor/tactical", rozwijanie "dvs." do "dumneavoastră" w krótkich CTA.`
   },
   'cs': {
     label: 'czeski',
-    prompt: `RYNEK: Czechy (cs-CZ). Formalność: vykání (forma grzecznościowa "vy") w treści formalnej.
-KONWENCJE: jednostki metryczne, data DD.MM.YYYY, korona czeska (Kč) po liczbie. Zachowaj diakrytykę czeską (č, ř, ž, ě).
-RYZYKO PRAWNE: Czechy mają relatywnie liberalne prawo o broni (w porównaniu do DE/FR) ale legislacja istnieje - treści prawne tłumacz wiernie bez interpretacji.`
+    prompt: `RYNEK: Czechy (cs-CZ). Audience: outdoor/army-surplus, myśliwi, kolekcjonerzy, AČR/Policie. Ton: rzeczowy profesjonalny, vykání (forma "Vy" z dużej w copy formalnym).
+KONWENCJE: jednostki metryczne (cm, kg), data DD.MM.YYYY, koruna "7 110 Kč" PO liczbie ze spacją tysięcznika. Diakrytyka czeska OBOWIĄZKOWA (č, ř, ž, š, ť, ň, ě, ů). Koszyk = "Košík" / "Do košíku", dostępność = "Skladem" (priorytetowy badge eksponowany na karcie produktu).
+TERMINOLOGIA: zachowaj akronimy taktyczne (MOLLE, EDC, IFAK, MultiCam, NVG, NATO, AČR) i nazwy brandów (Helikon, Mil-Tec, 5.11, Glock, CZ-75, Crye). Polskie kalki blokowane - używaj "voják", "vojenský", "myslivost", "lov".
+WYRÓŻNIKI CZ: pobocki/kamienne sklepy (eksponuj miasta), kontrakty AČR/Policie, segment "myslivost/lov" jako własny.
+RYZYKO PRAWNE: Czechy mają liberalne prawo o broni (zezwolenia dostępne dla obywateli) - NIE dodawaj polskich ostrzeżeń prawnych typu DE/FR. Glock/CZ-75 w katalogu home otwarcie.
+CTA native: "Detail", "Do košíku", "Koupit", "Skladem", "Doprava zdarma" (6-10 znaków).
+NIE: kalka 1:1 z PL (fałszywi przyjaciele: zápach=smród, stůl=stół), pisownia bez diakrytyki, "zł" zamiast "Kč", wykrzykniki spamem, tłumaczenie brand names.`
   },
   'hu': {
     label: 'węgierski',
     lowResource: true,
-    prompt: `RYNEK: Węgry (hu-HU). Formalność: forma grzecznościowa (magázás) w treści formalnej.
-KONWENCJE: jednostki metryczne, data YYYY.MM.DD. (specyfika węgierska!), forint (Ft) po liczbie. Język aglutynacyjny - struktura zdania inna niż w PL, NIE tłumacz słowo w słowo.
-RYZYKO PRAWNE: UE - przepisy zharmonizowane. Język aglutynacyjny - priorytetem wierność sensu nad strukturą.`
+    prompt: `RYNEK: Węgry (hu-HU). Audience: taktyka, łowiectwo (vadászat), wędkarstwo (horgászat), MH (Magyar Honvédség), kolekcjonerzy. Ton: użytkowy "katonai/taktikai", profesjonalny przystępny, magázás LEKKIE (forma czasownika, nie powtarzanie "Ön").
+KONWENCJE: jednostki metryczne, data YYYY.MM.DD. (KROPKA na końcu! specyfika HU), forint "76 900 Ft" PO liczbie ze spacją tysięcznika (forint NIE ma groszy). Diakrytyka pełna OBOWIĄZKOWA - ő/ű krytyczne (różne od ö/ü). Koszyk = "Kosár" / "Kosárba" (1 słowo, sufiks -ba aglutynacyjny), checkout = "Pénztár".
+TERMINOLOGIA: zachowaj akronimy taktyczne (MOLLE, EDC, IFAK, MultiCam, NVG, NATO) i nazwy brandów (Helikon, Mil-Tec, 5.11, Glock, Magnum, Crye). MH = Magyar Honvédség keep-as-is.
+JĘZYK AGLUTYNACYJNY: NIE tłumacz słowo w słowo z PL - HU pakuje przyimki/sufiksy w jedno słowo (PL "do koszyka" 2 słowa = HU "kosárba" 1 słowo). Tłumacz SENS i strukturę HU, nie PL.
+WYRÓŻNIKI HU: vadászat/horgászat jako własne segmenty, MPL + Foxpost jako standardy dostawy, "kézzel kovácsolt"/"hagyomány" jako sygnały premium.
+RYZYKO PRAWNE: UE - przepisy zharmonizowane. Broń palna engedélyköteles (wymaga zezwolenia) - tłumacz wiernie bez interpretacji.
+CTA native: "Kosárba", "Tovább", "Részletek", "Megtekint", "Vásárlás" (6-9 znaków, krócej niż PL/EN).
+NIE: "HUF" zamiast "Ft" w UI, pomijanie kropki na końcu daty, brak diakrytyki ő/ű, kalka struktury PL, "Magyar Hadsereg" (poprawnie: Magyar Honvédség/MH), wykrzykniki spamem.`
   },
   'fi': {
     label: 'fiński',
     lowResource: true,
-    prompt: `RYNEK: Finlandia (fi-FI). Formalność: fiński mniej rozróżnia formalność niż PL/DE - ton uprzejmy ale bezpośredni, bez sztucznego dystansu.
-KONWENCJE: jednostki metryczne, data DD.MM.YYYY, kwota "19,99 €". Język aglutynacyjny, struktura odległa od polskiej - tłumacz sens, NIE strukturę.
-RYZYKO PRAWNE: Finlandia ma kulturę myślistwa/strzelectwa, ścisłe pozwolenia. Ton rzeczowy, opisowy.`
+    prompt: `RYNEK: Finlandia (fi-FI). Audience: puolustusvoimat (siły zbrojne), varusmiehet (poborowi/ex-poborowi), metsästäjät (myśliwi), retkeilijät (outdoor), kolekcjonerzy surplus. Ton: rzeczowy bezpośredni "sinä" bez sztucznego dystansu. Varusteleka-style = no-bullshit honest z subtelnym humorem; sklepy generic = neutralny rzeczowy jak DE.
+KONWENCJE: cena "19,99 €" (przecinek + € po z spacją), tysiące "7 110 €" (spacja separator), data DD.MM.YYYY, metryka (cm/kg/mm). Diakrytyka ä, ö OBOWIĄZKOWA.
+FORMALNOŚĆ: "sinä/sinun" (Ty) default - fiński e-commerce nie używa teitittely poza treściami prawnymi. NIE polskie "Pan/Pani".
+TERMINOLOGIA UI: "Ostoskori" (koszyk), "Lisää ostoskoriin" CTA produkt (NIE "Lisää koriin" - typowy błąd generic translatora), "Kassa/Kassalle" checkout, "Tilaa" order, "Varastossa" badge dostępności (priorytetowy jak CZ Skladem), "Ilmainen toimitus" badge.
+KEEP-AS-IS: MOLLE, EDC, IFAK, MTP, MultiCam, NATO, NVG, NIJ, Glock, HK, 5.11, Helikon, Mil-Tec, Crye, Carinthia, Sako (FI), Tikka (FI), Sisu (FI), Puolustusvoimat/PV, varusmies. Sako/Tikka/Sisu = duma narodowa, eksponuj.
+JĘZYK AGLUTYNACYJNY: NIE tłumacz słowo w słowo z PL, struktura zdania kompletnie inna (przyrostki przypadków). Tłumacz sens przed formą.
+WYRÓŻNIKI FI: "Suomalaista"/Made in Finland, "vuodesta YYYY" (tradycja), "Sisu" (wytrwałość/lokalna wartość), powiązanie z PV/varusmies, segment metsästys/kalastus jako własny.
+RYZYKO PRAWNE: Finlandia ma silną kulturę strzelectwa/myślistwa ale rygorystyczne pozwolenia (Ase- ja ampuma-aselaki). Przy broni - neutralny opisowy ton, cytuj wiernie wymogi pozwolenia jeśli są w oryginale ("vaatii ampuma-aseluvan"), NIE dodawaj polskich ostrzeżeń z własnej inicjatywy.
+NIE: wykrzykniki agresywne ("Osta heti!!!"), teitittely w sklepie, pomijanie ä/ö, kalka 1:1 z PL, tłumaczenie brand names, em-dash (używaj "-"), narzucanie humoru Varusteleki na sklep generic.`
   }
 };
 
@@ -220,10 +265,28 @@ ${lines.join('\n')}
 Te tłumaczenia są nienegocjowalne. Generyczny translator pomyli je z potocznym znaczeniem - Ty nie możesz.`;
 }
 
+// keepAsIs - terminy zachowywane DOSŁOWNIE (akronimy NATO, marki, oznaczenia
+// techniczne). Branża nie tłumaczy "MOLLE" ani "AR-15" - generic to robi,
+// generic się myli. Działa zawsze gdy useGlossary jest on (czyli dla typów
+// z glossary: produktowe/poradniki/SEO/infografiki). Case-insensitive match.
+function matchKeepAsIs(text, keepAsIs) {
+  if (!keepAsIs || !keepAsIs.length) return [];
+  const haystack = text.toLowerCase();
+  return keepAsIs.filter(k => haystack.includes(k.term.toLowerCase()));
+}
+
+function buildKeepAsIsInstruction(matched) {
+  if (!matched.length) return '';
+  const lines = matched.map(k => `- "${k.term}" - ${k.context}`);
+  return `\nTERMINY DO ZACHOWANIA BEZ TŁUMACZENIA (akronimy/standardy/marki - branża używa oryginału):
+${lines.join('\n')}
+Te terminy MUSZĄ pozostać dosłownie w oryginalnym brzmieniu. Generyczny translator próbuje je tłumaczyć (np. "MOLLE" -> "system modułowy nośności") - to błąd, branża używa oryginału.`;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SKŁADANIE PROMPTU - tu macierz łączy się w jeden system prompt
 // ─────────────────────────────────────────────────────────────────────────────
-function buildSystemPrompt({ contentType, lang, glossary = [], customInstruction = '', useGlossary = null }) {
+function buildSystemPrompt({ contentType, lang, glossary = [], keepAsIs = [], customInstruction = '', useGlossary = null }) {
   const typeMod = TYPE_MODULES[contentType];
   const market = MARKET_PROFILES[lang];
   if (!typeMod || !market) {
@@ -243,16 +306,22 @@ function buildSystemPrompt({ contentType, lang, glossary = [], customInstruction
   parts.push(market.prompt);
 
   // Glosariusz - domyślnie wg typu treści, override możliwy z UI.
-  // matchedTerms = tylko terminy faktycznie w tekście (mniej szumu).
+  // KeepAsIs - ZAWSZE on gdy glosariusz on (akronim zostaje akronimem
+  // niezależnie od stylu treści - "MOLLE" w reklamie tak samo jak w katalogu).
   const glossaryOn = useGlossary === null ? typeMod.glossary : useGlossary;
-  if (glossaryOn && glossary.length) {
+  if (glossaryOn && (glossary.length || keepAsIs.length)) {
     return {
       system: parts.join('\n\n'),
-      // funkcja - filtr glosariusza odpala się gdy znamy tekst (w proxy)
       withGlossary: (text) => {
         const matched = glossary.filter(t => termMatchesText(t.pl, text));
+        const matchedKeep = matchKeepAsIs(text, keepAsIs);
         const gloss = buildGlossaryInstruction(matched, lang);
-        return { system: parts.join('\n\n') + gloss, matchedTerms: matched.map(t => t.pl) };
+        const keep = buildKeepAsIsInstruction(matchedKeep);
+        return {
+          system: parts.join('\n\n') + gloss + keep,
+          matchedTerms: matched.map(t => t.pl),
+          keptTerms: matchedKeep.map(k => k.term)
+        };
       }
     };
   }
