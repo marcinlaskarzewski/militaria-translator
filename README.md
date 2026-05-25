@@ -1,63 +1,162 @@
-# Tłumacz treści e-commerce - Militaria.pl
+# militaria-translator
 
-> **Teza:** Przy 9 językach i tysiącach produktów różnice nie są w pojedynczych słowach (modele LLM są dziś dobre), tylko w **konwencji rynku**. Zwykły tłumacz daje "Add to cart" tam, gdzie UK używa "Add to Basket". Tłumaczy "pozwolenie na broń" jako "Waffenschein" (do noszenia) zamiast "Waffenbesitzkarte" (do kupna). Tłumaczy agresywne polskie ADS dosłownie na niemiecki, gdzie tamtejsza ustawa o broni (Waffengesetz) karze taki ton. Tego pracownik nietechniczny nie wyłapie. Zbudowałem narzędzie wokół **trzech filarów**: składania instrukcji z 4 klocków (typ treści × rynek × słownik), słownika branżowego wstrzykiwanego tylko gdy potrzebny, oraz systemu mierzenia jakości - bo zadanie brzmi "udowodnij że lepsze", a to wymaga liczby, nie opinii.
+Tłumacz treści e-commerce dla Militaria.pl. PL → 9 języków (EN-US, EN-UK, DE, FR, UK, RO, CS, HU, FI).
+Świadomy typu treści (opis / regulamin / UI / marketing) i konwencji rynku (waluta, formalność, terminologia, prawo broni).
 
-**LIVE:** [militaria-translator.vercel.app](https://militaria-translator.vercel.app) (4 dowody przewagi z testów 22.05 w hero).
+LIVE: https://militaria-translator.vercel.app
 
-## Co zbudowane
+## Problem
 
-Tłumacz treści e-commerce PL → 9 języków (EN-US, EN-UK, DE, FR, UK, RO, CS, HU, FI) **świadomy kontekstu**: inaczej opis produktu (perswazja), inaczej przycisk checkout (skrócona konwencja UI rynku), inaczej regulamin (precyzja prawna, zero kreatywności).
+Generic translator (DeepL, Google) tłumaczy słowa, nie konwencje. Kilka realnych pułapek dla Militaria.pl:
 
-**Trzy tryby pracy:** pojedynczy tekst (z porównaniem do zwykłego tłumacza + oceną), tryb masowy (wgraj CSV produktów, pobierz przetłumaczony), długi dokument (regulamin .txt, automatycznie dzielony na sekcje i składany).
+- "Add to cart" - UK używa "Add to Basket" (Amazon UK, John Lewis). Inny rynek, inny standard UI.
+- "pozwolenie na broń" → "Waffenschein" (do noszenia broni publicznie). Poprawnie: "Waffenbesitzkarte" (do posiadania). Dwa różne dokumenty prawne.
+- Marketing DE "Zabij konkurencję!" przetłumaczony dosłownie ("Schlag die Konkurrenz!") jest problematyczny pod Waffengesetz (ustawa o broni). Stonowane "Überzeugen Sie" trzyma intencję bez ryzyka.
 
-## Jak uruchomić
+Przy 9 językach × tysiącach SKU pracownik bez kompetencji językowo-prawnych takich różnic nie wyłapie.
+
+## Uruchomienie
 
 ```bash
-cp .env.example .env          # wklej swój klucz Anthropic
-node proxy.js                 # Node 18+, ZERO zależności npm
+cp .env.example .env          # wklej ANTHROPIC_API_KEY
+node proxy.js                 # Node 18+, brak zależności npm
+# otwórz http://localhost:3000
 ```
-Otwórz `http://localhost:3000`. Tyle. Bez `npm install`, bez kompilacji.
 
-## Kluczowe decyzje
+Wariant alternatywny (preview): `vercel dev` - ta sama logika w `api/` (serverless).
 
-| Decyzja | Dlaczego |
-|---|---|
-| **Składanie z klocków** (`BASE + typ[11] + rynek[9] + słownik`) zamiast 11 osobnych instrukcji | Typ treści i rynek to dwie niezależne sprawy. Składanie daje 99 kombinacji bez duplikacji i pozwala zmienić profil rynku w jednym miejscu |
-| **Profile rynkowe oparte na researchu 5 sklepów per kraj** (`research/per-country/*.md`) | Konkrety zamiast "wiedzy modelu": UK 13× "Basket", US 414× "Cart", DE "In den Warenkorb" 184×, HU data `YYYY.MM.DD.` z kropką. Rekruter może zweryfikować źródła. 9 raportów w repo |
-| **Słownik wstrzykiwany tylko gdy potrzebny + format negatywny** (`"łuska" = "Hülse", NIE "shell"`) | Wrzucenie 90 par do każdego promptu = szum, model gubi instrukcje. Mechanizm dopasowujący rozpoznaje polską fleksję. 10 zweryfikowanych terminów > 50 zmyślonych |
-| **Zwykły tłumacz = ten sam model bez kontekstu** | Kontrolowany eksperyment z jedną zmienną: moja praca nad instrukcją. Gdyby po drugiej stronie był DeepL, różnica mogłaby wynikać z "lepszego silnika". Tak różnica jest czysto moja |
-| **Sędzia + tłumaczenie wsteczne** | "Wygląda lepiej" to opinia. Sędzia ocenia oba tłumaczenia w losowej kolejności (nie wie które jest moje, 10× pod rząd nie potrafi zgadnąć). Sędzia czasem bije moje - to dowód że metryka nie jest naciągnięta. Tłumaczenie wsteczne dla FI/UK/HU/RO bo nikt w firmie nie sprawdzi fińskiego |
-| **Lokalny serwer pośredniczący, klucz w `.env`** | Zadanie zabrania backendu - trzymam się. Bez bazy, bez stanu, bez logiki biznesowej. Klucz API w przeglądarce = rachunek na cudzej karcie. Pośrednik to cienka warstwa bezpieczeństwa, nie backend |
-| **Sygnał "wymaga sprawdzenia"** dla typu Prawne / rynku z surowym prawem broni (DE/FR/UK) / rzadszego języka (FI/UK/HU/RO) | Narzędzie samo przyznaje granice. Nie sprzedaję pewności której nie mam |
+## Architektura
 
-## Dowód jakości
+System prompt składany w runtime z 4 komponentów:
 
-- **Smoke test** (`node tests/smoke.js`) → `PASS 20 FAIL 0`. Sprawdza 3 filary bez API: 99 unikalnych instrukcji (11 typów × 9 rynków), słownik bez fałszywych dopasowań na 19 typowych stringach UI ("Zamknij okno" NIE łapie "zamek"), dzielenie regulaminu po granicach paragrafów (§).
-- **Smoke test LIVE z 22.05** (`tests/results/SMOKE-RESULTS-2026-05-22.md`) - 8 realnych scenariuszy z API: kontekstowe wygrało 3/4 wg sędziego (Basket, Überzeugen, Waffenbesitzkarte), 1/4 zwykłe (prawne/DE - naprawione w `prompts.js`).
+```
+BASE  +  TYPE_MODULE[11]  +  MARKET_PROFILE[9]  +  GLOSSARY(filtered)
+```
+
+Daje 99 unikalnych konfiguracji (11 typów treści × 9 rynków) bez duplikacji.
+Glosariusz wstrzykiwany do promptu tylko dla terminów obecnych w wejściu (matcher z obsługą fleksji PL).
+
+| Komponent | Plik | Zawartość |
+|---|---|---|
+| BASE | `src/prompts.js` | Reguły niepodważalne: zachowanie HTML, brak streszczeń, brak preambuły |
+| TYPE_MODULE | `src/prompts.js` `TYPE_MODULES` | 11 typów: produktowe (długie/krótkie), SEO, poradniki, marketingowe, systemowe/UI, informacyjne, prawne, infografiki, ogólne, custom |
+| MARKET_PROFILE | `src/prompts.js` `MARKET_PROFILES` | 9 rynków. Każdy oparty na researchu 5 sklepów konkurencyjnych (`research/per-country/*.md`) |
+| GLOSSARY | `src/glossary.json` | 10 terminów PL × 9 języków + `keepAsIs` (akronimy NATO/MOLLE/AR-15) |
+| Sędzia / back-translation | `src/evaluate.js` | Ocena obu tłumaczeń przez niezależny przebieg, kolejność losowana |
+| Wspólna logika | `src/handlers.js` | Wywołanie API z retry/backoff, kompozycja odpowiedzi |
+| Serwer lokalny | `proxy.js` | HTTP server, statyka + endpointy API, klucz w `.env` |
+| Wariant serverless | `api/{translate,evaluate,meta}.js` | Vercel functions, ta sama `handlers.js` |
+
+## API
+
+Trzy endpointy. Identyczna sygnatura w `proxy.js` i `api/`.
+
+### `GET /api/meta`
+Metadane do dropdownów UI: lista typów (z `glossaryDefault`), lista języków (z `lowResource`), licznik terminów słownika.
+
+### `POST /api/translate`
+```json
+{
+  "text": "...",
+  "contentType": "produktowe_dlugie",
+  "lang": "de",
+  "useGlossary": null,        // null = decyduje typ; true/false = override
+  "customInstruction": "",    // tylko dla contentType=wlasny_prompt
+  "compare": true             // tłumaczenie generyczne side-by-side
+}
+```
+Response:
+```json
+{
+  "contextual": "...",
+  "generic": "...",           // null jeśli compare=false
+  "matchedTerms": ["łuska", "magazynek"],
+  "keptTerms": ["MOLLE"],
+  "needsReview": true,
+  "reviewReason": "typ:prawne + rynek:de",
+  "lowResource": false,
+  "uiCharBudget": null,       // dla typu systemowe_ui: {length, target:30, hardMax:45, status}
+  "appliedContext": { "contentTypeLabel": "...", "marketLabel": "...", "glossaryCount": 2, "keepAsIsCount": 1, "reviewFlag": true }
+}
+```
+
+### `POST /api/evaluate`
+Sędzia LLM ocenia oba tłumaczenia wg rubryki (terminologia, formalność, naturalność) + back-translation dla języków oznaczonych `lowResource:true` (FI/UK/HU/RO). Kolejność tłumaczeń randomizowana - model nie wie które jest „kontekstowe".
+
+## Limity i konfiguracja
+
+| Parametr | Wartość | Plik |
+|---|---|---|
+| Model | `claude-sonnet-4-6` | `src/handlers.js` |
+| Temperatura | `0.3` | `src/handlers.js` |
+| Max tokens (response) | `4096` | `src/handlers.js` |
+| Max długość wejścia | `12 000` znaków | `src/handlers.js:MAX_INPUT_CHARS` |
+| Timeout pojedynczego żądania | `60s` | `src/handlers.js` |
+| Retry / backoff | `2 próby (1.5s → 3s)` na 429/529/5xx | `src/handlers.js` |
+| Tryb masowy CSV | `25 wierszy` (prototyp; produkcja = kolejka) | `public/app.js:BATCH_LIMIT` |
+| Chunking dokumentu | `8000 znaków/chunk` na granicach § lub paragrafu | `public/app.js:CHUNK_MAX` |
+
+## Testy
+
+```bash
+node tests/smoke.js
+```
+
+Output: stdout + `tests/results.txt`. Trzy filary, bez wywoływania API:
+
+1. **Macierz promptów** - 99 unikalnych kombinacji, każda zawiera fragment swojego `TYPE_MODULE` i `MARKET_PROFILE`.
+2. **Matcher glosariusza** - fleksja PL działa (`Wymieniłem kolbę` → `kolba`), brak false-positive na 19 typowych stringach UI (`Zamknij okno` NIE łapie `zamek`, `Kolejka` NIE łapie `kolba`).
+3. **Chunking** - dokument 30 paragrafów i regulamin z `§` dzielone bez przekroczenia limitu, granice na końcach sekcji.
+
+Wynik: `PASS 20 / FAIL 0`.
+
+`tests/results/SMOKE-RESULTS-2026-05-22.md` zawiera dodatkowo log testu LIVE z 8 scenariuszy (z faktycznym API): sędzia ocenił kontekstowe wygrane w 3/4 (Basket UK, Überzeugen DE, Waffenbesitzkarte DE), 1 strata na prawne/DE - naprawione w `src/prompts.js:100-108`.
 
 ## Struktura
 
 ```
-proxy.js                serwer lokalny (główny sposób uruchomienia)
-api/                    wariant serverless (podgląd Vercel, ta sama logika)
-src/handlers.js         wspólna logika: API, tłumaczenie, ocena
-src/prompts.js          składanie instrukcji - serce narzędzia
-src/glossary.json       słownik militarny PL × 9 języków
-src/evaluate.js         sędzia + tłumaczenie wsteczne
-src/examples.json       gotowe przykłady (pomoc demo + benchmark)
-public/                 interfejs (czysty JS, bez kompilacji)
-research/per-country/   9 raportów konkurencji (źródło profili rynkowych)
-tests/smoke.js          test 99 instrukcji + matchera + dzielenia
-tests/results/          log testu LIVE z 22.05
+proxy.js                serwer lokalny (zalecany sposób uruchomienia)
+api/                    warianty serverless (Vercel), identyczna logika
+src/
+  handlers.js           wywołanie Claude API, retry, kompozycja response
+  prompts.js            BASE + TYPE_MODULES + MARKET_PROFILES + buildSystemPrompt
+  glossary.json         10 terminów PL × 9 języków + keepAsIs
+  evaluate.js           sędzia LLM + back-translation
+  examples.json         przykłady demo per typ treści
+public/                 frontend (vanilla JS, brak kompilacji)
+research/per-country/   9 raportów konkurencji (źródło MARKET_PROFILES)
+tests/
+  smoke.js              testy 3 filarów bez API
+  results/              log testu LIVE z 22.05
+.env.example            template (klucz placeholder)
+vercel.json             config serverless
 ```
 
-## Świadome granice (czego NIE ma, dlaczego)
+## Założenia i świadomie pominięte
 
-- **Słownik** = pokazanie mechanizmu (10 terminów). Produkcja: budowany z realnego katalogu + walidacja rodzima per rynek.
-- **Obsługa .docx/.pdf** - wymagałaby dodatkowych bibliotek (złamanie zasady "bez zależności"). Tryb .txt pokrywa rdzeń problemu (regulamin > limit modelu).
-- **Standardowe miary jakości (chrF, COMET)** - świadomie nie wdrożone. Wymagają wzorcowych tłumaczeń lub dodatkowych modeli. Sędzia + tłumaczenie wsteczne działają bez nich.
-- **Pamięć tłumaczeń (translation memory)** - spójność między uruchomieniami zapewnia słownik. Pełna spójność = TM, poza zakresem prototypu.
+- **Bez backendu w sensie aplikacyjnym** (zgodnie z briefem): brak bazy, brak sesji, brak stanu. `proxy.js` to wyłącznie warstwa bezpieczeństwa dla klucza API (klucz w przeglądarce = wyciek). Vercel functions mają tę samą charakterystykę.
+- **Bez zależności npm**. Wszystko na stdlib Node. Konsekwencja: brak obsługi .docx/.pdf (wymagałaby `mammoth` / `pdf-parse`). Tryb `.txt` z chunkingiem pokrywa rdzeń problemu (regulamin > limit kontekstu).
+- **Bez chrF / COMET / BLEU**. Wymagają referencji ludzkich lub modeli scoringowych. Sędzia LLM + back-translation działają bez nich, są tańsze.
+- **Bez translation memory**. Spójność terminologii w obrębie pojedynczego żądania zapewnia `GLOSSARY`; spójność między żądaniami = TM, poza zakresem prototypu.
+- **Glosariusz: 10 terminów × 9 języków** (zweryfikowane PL/EN/DE, eksperymentalne pozostałe). W produkcji: budowany z realnego katalogu Militaria + walidacja native per rynek.
 
 ## Proces budowy
 
-13 commitów w git pokazują kolejne kroki. Plan v1 (11 dużych osobnych instrukcji, jedna per typ treści) odrzuciłem po własnym audycie - dwie osie problemu (typ × rynek) są niezależne, jedna duża instrukcja je sklejała i powtarzała słownik 9 razy. Sprawdziłem gotowe rozwiązania (DeepL, Lokalise, Crowdin) - operują na plikach i pojedynczych zdaniach, ślepe na typ treści e-commerce. Claude + składanie z klocków + słownik branżowy + sędzia jakości = jedyna droga która odpowiada na pytanie z PDF "udowodnij że lepsze".
+15 commitów na master:
+1. Szkielet projektu, zero deps
+2. Macierz promptów (BASE + 11 typów + 9 rynków + glosariusz)
+3. Glosariusz militarny
+4. Sędzia LLM + back-translation
+5. `handlers.js` wspólny + `proxy.js` z retry/backoff
+6. Frontend vanilla (jeden ekran, 3 tryby)
+7. Przykłady demo per typ
+8. Wariant serverless (`api/`)
+9. README v1
+10. (po audycie 22.05) naprawa promptu prawne/DE + smoke test 8 scenariuszy LIVE
+11. Słownik militarny zawsze aktywny w UI (podgląd terminów pod typem)
+12. Profile rynkowe oparte na researchu 5 sklepów per rynek (9 raportów)
+13. Smoke test 99 promptów + matcher + chunking (20/20 PASS)
+14. Hero index.html bez marketingowego copy
+15. README v2 (techniczny)
+
+Plan v1 (11 osobnych dużych instrukcji per typ treści) odrzucony po własnym audycie: typ × rynek to dwie niezależne osie, monolityczne instrukcje je sklejały i wymagały duplikacji glosariusza 9 razy. Sprawdzone alternatywy (DeepL, Lokalise, Crowdin) operują na plikach i pojedynczych zdaniach - ślepe na typ treści e-commerce i ryzyko prawne per rynek.
