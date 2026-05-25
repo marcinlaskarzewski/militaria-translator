@@ -17,13 +17,25 @@ Przy 9 językach × tysiącach SKU pracownik bez kompetencji językowo-prawnych 
 
 ## Uruchomienie
 
+Trzy ścieżki, w kolejności od najszybszej:
+
+### 1. LIVE (bez instalacji)
+
+https://militaria-translator.vercel.app - apka działa, klucz API podpięty po mojej stronie. Wystarczy przeglądarka.
+
+### 2. Lokalnie (Node)
+
 ```bash
-cp .env.example .env          # wklej ANTHROPIC_API_KEY
+cp .env.example .env          # wklej swój ANTHROPIC_API_KEY
 node proxy.js                 # Node 18+, brak zależności npm
 # otwórz http://localhost:3000
 ```
 
-Wariant alternatywny (preview): `vercel dev` - ta sama logika w `api/` (serverless).
+Klucz API: rejestracja na https://console.anthropic.com (darmowa, ~5 USD startowych kredytów wystarczy na kilkaset tłumaczeń przy modelu Sonnet 4.6).
+
+### 3. Wariant serverless
+
+`vercel dev` - ta sama logika w `api/{translate,evaluate,meta}.js`, identyczne endpointy. Wymaga konta Vercel + `vercel link`.
 
 ## Architektura
 
