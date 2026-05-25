@@ -1,0 +1,32 @@
+Smoke test - 2026-05-25T11:36:12.517Z
+
+=== Filar 1: macierz 99 systemPromptow (11 typow x 9 rynkow) ===
+  PASS: 9 rynkow w MARKET_PROFILES (jest 9)
+  PASS: 11 typow w CONTENT_TYPES_ORDER (jest 11)
+  PASS: zbudowano 99 promptow (zbudowano 99)
+  PASS: 99 UNIKALNYCH promptow - brak duplikatow (unikalnych 99)
+  PASS: kazdy prompt zawiera fragment swojego TYPE_MODULE (99/99)
+  PASS: kazdy prompt zawiera fragment swojego MARKET_PROFILE (99/99)
+
+=== Filar 2: matcher glosariusza (fleksja PL + brak FP na UI/menu) ===
+  PASS: lapie termin (fleksja) w: "Wymienilem kolbe karabinu." - matched: [kolba]
+  PASS: lapie termin (fleksja) w: "Pusta luska na podlodze." - matched: [łuska]
+  PASS: lapie termin (fleksja) w: "Magazynek do AR-15." - matched: [magazynek]
+  PASS: lapie termin (fleksja) w: "Lufa wyczyszczona." - matched: [lufa]
+  PASS: zero false-positive na 19 stringach UI (FP: 0, przyklady: )
+  PASS: keepAsIs lapie "MOLLE" w: "System MOLLE i kieszen IFAK." (matched: [MOLLE,IFAK])
+  PASS: keepAsIs lapie "IFAK" w: "System MOLLE i kieszen IFAK." (matched: [MOLLE,IFAK])
+  PASS: keepAsIs lapie "EDC" w: "edc w torbie + ar-15 do zabawy" (matched: [EDC,AR-15])
+  PASS: keepAsIs lapie "AR-15" w: "edc w torbie + ar-15 do zabawy" (matched: [EDC,AR-15])
+  PASS: keepAsIs lapie "Glock" w: "glock z optyka NV" (matched: [Glock])
+
+=== Filar 3: chunking dokumentow po granicach sekcji (§, paragrafy) ===
+  PASS: dokument 30 paragrafow dzieli sie na chunki (30 chunkow)
+  PASS: wszystkie chunki pod limitem 12000 znakow
+  PASS: tresc nie zgubiona - "Paragraf 30" znajduje sie w wyniku
+  PASS: chunki regulaminu zaczynaja sie od § (3 z 3)
+
+============================================================
+WYNIK: PASS 20  FAIL 0
+============================================================
+
