@@ -10,7 +10,9 @@
 const https = require('https');
 const prompts = require('./prompts.js');
 const evaluate = require('./evaluate.js');
-const glossary = require('./glossary.json').terms;
+const glossaryJson = require('./glossary.json');
+const glossary = glossaryJson.terms;
+const keepAsIs = glossaryJson.keepAsIs ? glossaryJson.keepAsIs.terms : [];
 const examples = require('./examples.json').examples;
 
 const MODEL = 'claude-sonnet-4-6';
@@ -75,13 +77,15 @@ async function handleTranslate(apiKey, payload) {
     throw new Error(`Tekst za długi (${text.length} znaków, limit ${MAX_INPUT_CHARS}). Podziel na mniejsze fragmenty - to prototyp, w produkcji byłby chunking.`);
   }
 
-  const built = prompts.buildSystemPrompt({ contentType, lang, glossary, customInstruction, useGlossary });
+  const built = prompts.buildSystemPrompt({ contentType, lang, glossary, keepAsIs, customInstruction, useGlossary });
   let system = built.system;
   let matchedTerms = [];
+  let keptTerms = [];
   if (built.withGlossary) {
     const g = built.withGlossary(text);
     system = g.system;
     matchedTerms = g.matchedTerms;
+    keptTerms = g.keptTerms || [];
   }
 
   const tasks = [callClaude({ apiKey, system, user: text, temperature: 0.3 })];
@@ -100,13 +104,38 @@ async function handleTranslate(apiKey, payload) {
     marketMeta.lowResource ? 'język o niskich zasobach LLM - weryfikacja native speakera' : null
   ].filter(Boolean);
 
+  // UI character budget - dla typu systemowe_ui pilnuj zwiezlosci.
+  // Nie blokujemy, sygnalizujemy zeby pracownik mogl podjac decyzje (czy
+  // tlumaczenie zmiesci sie w przycisku/banerze). Limit 30 = standardowy
+  // dla CTA, 45 = absolutny max dla wiekszosci komponentow UI.
+  let uiCharBudget = null;
+  if (contentType === 'systemowe_ui') {
+    const len = contextual.length;
+    uiCharBudget = {
+      length: len,
+      target: 30,
+      hardMax: 45,
+      status: len <= 30 ? 'ok' : len <= 45 ? 'warn' : 'over'
+    };
+  }
+
   return {
     contextual,
     generic: compare ? generic : null,
     matchedTerms,
+    keptTerms,
     needsReview: reasons.length > 0,
     reviewReason: reasons.length ? reasons.join(' + ') : null,
-    lowResource: !!marketMeta.lowResource
+    lowResource: !!marketMeta.lowResource,
+    uiCharBudget,
+    // Meta o tym co AI brala pod uwage - dla widgetu "Uwzgledniono"
+    appliedContext: {
+      contentTypeLabel: typeMeta.label || contentType,
+      marketLabel: marketMeta.label || lang,
+      glossaryCount: matchedTerms.length,
+      keepAsIsCount: keptTerms.length,
+      reviewFlag: reasons.length > 0
+    }
   };
 }
 
@@ -126,17 +155,31 @@ async function handleEvaluate(apiKey, payload) {
 
 // ── Metadane dla UI ──────────────────────────────────────────────────────────
 function getMeta() {
+  // Przyklady kilku terminow z glosariusza i keepAsIs - dla preview pod dropdown.
+  // Buduje zaufanie do narzedzia od pierwszej sekundy ("widze co to potrafi").
+  const sampleGlossary = glossary.slice(0, 5).map(t => t.pl);
+  const sampleKeepAsIs = keepAsIs.slice(0, 5).map(k => k.term);
+
   return {
     types: prompts.CONTENT_TYPES_ORDER.map(k => ({
       id: k,
       label: prompts.TYPE_MODULES[k].label,
       glossaryDefault: !!prompts.TYPE_MODULES[k].glossary,
       isCustom: !!prompts.TYPE_MODULES[k].isCustom,
-      example: examples[k] || ''
+      // examples[k] moze byc array (rotacja 2-3 wariantow) albo string (legacy)
+      examples: Array.isArray(examples[k]) ? examples[k] : (examples[k] ? [examples[k]] : []),
+      example: Array.isArray(examples[k]) ? (examples[k][0] || '') : (examples[k] || '')
     })),
     langs: Object.entries(prompts.MARKET_PROFILES).map(([id, m]) => ({
       id, label: m.label, lowResource: !!m.lowResource
-    }))
+    })),
+    // Meta dla preview kontekstu w UI (co narzedzie potrafi)
+    glossaryInfo: {
+      termsCount: glossary.length,
+      keepAsIsCount: keepAsIs.length,
+      sampleTerms: sampleGlossary,
+      sampleKeepAsIs: sampleKeepAsIs
+    }
   };
 }
 

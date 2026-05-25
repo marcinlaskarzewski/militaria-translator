@@ -3,16 +3,129 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Militaria.pl - Tłumacz treści e-commerce</title>
+<title>Militaria.pl Translator - tłumacz e-commerce świadomy rynku</title>
+<meta name="description" content="Prototyp tłumacza e-commerce PL na 9 języków. Świadomy typu treści i konwencji rynku. Glosariusz branżowy + sędzia jakości.">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header>
-  <h1>Tłumacz treści <span>Militaria.pl</span></h1>
-  <p class="sub">Tłumaczenie świadome kontekstu - inaczej opis produktu, inaczej przycisk, inaczej regulamin.</p>
+
+<!-- ════════════════════════════════════════════════════════════════
+     HERO - landing dla rekrutera (5 sekund: o co tu chodzi)
+     ════════════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-meta">
+      <span class="dot"></span>
+      <span>prototyp · Militaria.pl · zadanie rekrutacyjne</span>
+    </div>
+
+    <h1>Tłumacz dla sklepu Militaria.pl.<br>
+        <span class="accent">9 języków, 11 typów treści, 9 wariantów rynkowych.</span></h1>
+
+    <p class="hero-sub">
+      Zwykły translator daje "Add to cart" tam gdzie UK używa <b>"Add to Basket"</b>.
+      Tłumaczy "pozwolenie na broń" jako "Waffenschein" (do noszenia)
+      zamiast <b>"Waffenbesitzkarte"</b> (do kupna) - to inne dokumenty prawne.
+      Przy 9 językach i tysiącach produktów pracownik tego nie wyłapie.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#app" class="btn primary">
+        Wypróbuj <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="proofs-label">4 przykłady z testów 22.05.2026</div>
+
+    <div class="proofs">
+      <article class="proof">
+        <div class="proof-head">
+          <span>systemowe / UI</span>
+          <span class="lang">PL → EN-UK</span>
+        </div>
+        <div class="proof-src">Dodaj do koszyka</div>
+        <div class="proof-row generic">
+          <span class="who">Generic</span>
+          <span class="text">Add to cart</span>
+        </div>
+        <div class="proof-row ctx">
+          <span class="who">Nasze</span>
+          <span class="text">Add to Basket</span>
+        </div>
+        <div class="proof-note">
+          <b>Konwencja UI rynku.</b> "Cart" to amerykański default. UK używa "Basket" (Amazon UK, John Lewis). Profil rynku EN-UK to wymusza.
+        </div>
+      </article>
+
+      <article class="proof">
+        <div class="proof-head">
+          <span>prawne</span>
+          <span class="lang">PL → DE</span>
+        </div>
+        <div class="proof-src">Pozwolenie na broń wydane przez komendę policji.</div>
+        <div class="proof-row generic">
+          <span class="who">Generic</span>
+          <span class="text">Waffenschein</span>
+        </div>
+        <div class="proof-row ctx">
+          <span class="who">Nasze</span>
+          <span class="text">Waffenbesitzkarte</span>
+        </div>
+        <div class="proof-note">
+          <b>Precyzja prawno-broniowa DE.</b> Waffenschein = pozwolenie na noszenie krótkiej broni publicznie. Waffenbesitzkarte = posiadanie do kupna. Generic myli dwa różne dokumenty.
+        </div>
+      </article>
+
+      <article class="proof">
+        <div class="proof-head">
+          <span>marketingowe</span>
+          <span class="lang">PL → DE</span>
+        </div>
+        <div class="proof-src">Zabij konkurencję na strzelnicy!</div>
+        <div class="proof-row generic">
+          <span class="who">Generic</span>
+          <span class="text">Schlag die Konkurrenz!</span>
+        </div>
+        <div class="proof-row ctx">
+          <span class="who">Nasze</span>
+          <span class="text">Überzeugen Sie auf dem Schießstand.</span>
+        </div>
+        <div class="proof-note">
+          <b>Respekt Waffengesetz.</b> Agresywna retoryka o broni w DE jest prawnie problematyczna. Profil rynku DE łagodzi ton zachowując CTA.
+        </div>
+      </article>
+
+      <article class="proof">
+        <div class="proof-head">
+          <span>produktowe · glosariusz</span>
+          <span class="lang">PL → DE</span>
+        </div>
+        <div class="proof-src">Magazynek na 30 śrucin.</div>
+        <div class="proof-row generic">
+          <span class="who">Generic</span>
+          <span class="text">Magazin auf 30 Schrotkugeln</span>
+        </div>
+        <div class="proof-row ctx">
+          <span class="who">Nasze</span>
+          <span class="text">Magazin auf 30 Diabolo-Kugeln</span>
+        </div>
+        <div class="proof-note">
+          <b>Terminologia branżowa.</b> Schrotkugeln = śrut strzelniczy do strzelby. Diabolo-Kugeln = śruciny pneumatyczne. Glosariusz wymusza poprawny termin.
+        </div>
+      </article>
+    </div>
+  </div>
 </header>
 
-<main>
+<!-- ════════════════════════════════════════════════════════════════
+     GLOWNA APKA
+     ════════════════════════════════════════════════════════════════ -->
+<main class="app" id="app">
+
+  <div class="section-label">tłumacz</div>
+  <h2 class="section-title">Wybierz tryb i przetestuj</h2>
+  <p class="section-sub">Trzy tryby: pojedynczy tekst (z porównaniem do zwykłego tłumacza), tryb masowy CSV, oraz długi dokument (automatycznie dzielony na sekcje).</p>
+
   <div class="tabs">
     <button class="tab active" data-mode="single">Pojedynczy tekst</button>
     <button class="tab" data-mode="batch">Tryb masowy (CSV)</button>
@@ -47,9 +160,9 @@
       </label>
 
       <div class="opts">
-        <label class="check"><input type="checkbox" id="useGlossary" checked> Użyj słownika militarnego</label>
         <label class="check"><input type="checkbox" id="compare" checked> Pokaż porównanie ze zwykłym tłumaczem</label>
         <label class="check"><input type="checkbox" id="doEvaluate"> Oceń jakość (wolniejsze, +ocena ekspercka)</label>
+        <input type="hidden" id="useGlossary" value="true">
       </div>
 
       <button id="translateBtn">Przetłumacz</button>
@@ -63,7 +176,7 @@
         <input type="file" id="csvFile" accept=".csv,text/csv">
         <small class="hint">Plik CSV z jedną kolumną tekstu (pierwszy wiersz = nagłówek). Limit prototypu: <b>25 wierszy</b> - w produkcji byłaby kolejka zadań.</small>
       </label>
-      <label class="check" style="margin-bottom:14px"><input type="checkbox" id="batchGlossary" checked> Użyj słownika militarnego</label>
+      <input type="hidden" id="batchGlossary" value="true">
       <button id="batchBtn" disabled>Przetłumacz plik</button>
       <div id="batchProgress" class="hidden">
         <div class="progress-bar"><div id="progressFill"></div></div>
@@ -79,7 +192,7 @@
         <input type="file" id="docFile" accept=".txt,text/plain">
         <small class="hint">Plik <b>.txt</b>. Długi tekst (np. regulamin powyżej limitu 12000 znaków) zostanie automatycznie podzielony na sekcje (po §, paragrafach), przetłumaczony z zachowaniem spójności terminologii i złożony z powrotem. Word/PDF: patrz "dalszy rozwój" w README.</small>
       </label>
-      <label class="check" style="margin-bottom:14px"><input type="checkbox" id="docGlossary"> Użyj słownika militarnego</label>
+      <input type="hidden" id="docGlossary" value="true">
       <button id="docBtn" disabled>Przetłumacz dokument</button>
       <div id="docProgress" class="hidden">
         <div class="progress-bar"><div id="docProgressFill"></div></div>
@@ -121,6 +234,7 @@
           <button class="copy" data-target="ctxOut">Kopiuj</button>
         </div>
         <div id="ctxOut" class="out"></div>
+        <div id="appliedContext" class="applied hidden"></div>
         <div id="matched" class="matched hidden"></div>
       </div>
 
@@ -141,7 +255,11 @@
 </main>
 
 <footer>
-  Prototyp rekrutacyjny · Militaria.pl · silnik: Claude (Anthropic) · tłumaczenie wymaga akceptacji człowieka
+  <div class="footer-row">
+    <div class="footer-meta">
+      prototyp rekrutacyjny <span>·</span> silnik: Claude (Anthropic) <span>·</span> tłumaczenie wymaga akceptacji człowieka
+    </div>
+  </div>
 </footer>
 
 <script src="/app.js"></script>

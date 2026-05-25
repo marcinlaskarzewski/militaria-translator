@@ -162,9 +162,27 @@
         "uk": "кобура",
         "ro": "toc pistol",
         "cs": "pouzdro",
-        "hu": "pisztolytáska",
+        "hu": "pisztolytąska",
         "fi": "kotelo"
       }
     }
-  ]
+  ],
+  "keepAsIs": {
+    "_purpose": "Terminy ktore ZAWSZE zostaja w oryginalnym brzmieniu - akronimy NATO, standardy militarne, marki, oznaczenia modeli. Tlumaczenie ich (np. MOLLE -> 'system modulowy nosnosci ladunku') jest BLEDEM bo branza ich nie uzywa.",
+    "_rationale": "Generic translator probuje tlumaczyc wszystko, w tym akronimy. Rezultat: 'Plate carrier' -> 'nosnik plyt' (po niemiecku 'Plattentrager') zamiast zostawienia angielskiego oryginalu ktorego uzywa cala branza. To dokladnie ten typ bledu ktory branzowy operator natychmiast zauwazy.",
+    "terms": [
+      {"term": "MOLLE", "context": "standard mocowania osprzetu (Modular Lightweight Load-carrying Equipment) - branza zawsze 'MOLLE'"},
+      {"term": "EDC", "context": "Every Day Carry - akronim spolecznosci taktycznej"},
+      {"term": "plate carrier", "context": "kamizelka na plyty balistyczne - branza nie tlumaczy"},
+      {"term": "IFAK", "context": "Individual First Aid Kit - standard militarny"},
+      {"term": "AR-15", "context": "platforma karabinu, NIE tlumaczyc oznaczenia"},
+      {"term": "AK-47", "context": "platforma karabinu, NIE tlumaczyc oznaczenia"},
+      {"term": "Glock", "context": "marka pistoletu, nazwa wlasna"},
+      {"term": "5.56x45 NATO", "context": "standard kalibru NATO, oznaczenie techniczne"},
+      {"term": "9x19", "context": "standard kalibru, oznaczenie techniczne"},
+      {"term": ".22LR", "context": "kaliber Long Rifle, branza nie tlumaczy"},
+      {"term": "Picatinny", "context": "standard szyny montazowej, nazwa wlasna"},
+      {"term": "BB", "context": "kulka ASG - akronim branzowy"}
+    ]
+  }
 }

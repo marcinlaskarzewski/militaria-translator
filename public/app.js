@@ -26,10 +26,27 @@ function syncType() {
   const t = META.types.find(x => x.id === $('contentType').value);
   if (!t) return;
   $('customWrap').classList.toggle('hidden', !t.isCustom);
-  $('useGlossary').checked = t.glossaryDefault;
-  $('typeHint').textContent = t.isCustom
-    ? 'Wpisz własną instrukcję poniżej.'
-    : (t.glossaryDefault ? 'Słownik militarny włączony - terminologia sprzętu będzie fachowa.' : 'Treść ogólna - słownik militarny domyślnie wyłączony.');
+  // useGlossary teraz hidden input z "true" - zawsze aktywne (filter robi swoje).
+  // Komunikacja przez hint - pracownik wie ze slownik dziala i czym dysponuje.
+  renderTypeHint(t);
+}
+
+function renderTypeHint(t) {
+  const host = $('typeHint');
+  if (t.isCustom) {
+    host.textContent = 'Wpisz własną instrukcję poniżej.';
+    return;
+  }
+  const ctxLine = t.glossaryDefault
+    ? 'Słownik branżowy aktywny - terminologia sprzętu będzie fachowa.'
+    : 'Treść ogólna - słownik aktywny tylko jeśli pojawi się termin militarny.';
+  const gi = META.glossaryInfo;
+  if (!gi) { host.textContent = ctxLine; return; }
+  // 2-linijkowy hint: status + skladniki (na nizszej linii w jasniejszym kolorze)
+  host.innerHTML = ctxLine + ` <span class="hint-meta">` +
+    `Słownik: ${gi.termsCount} terminów (${gi.sampleTerms.slice(0, 3).join(', ')}...) ` +
+    `+ ${gi.keepAsIsCount} akronimów zachowanych dosłownie (${gi.sampleKeepAsIs.slice(0, 3).join(', ')}...).` +
+    `</span>`;
 }
 
 $('sourceText').addEventListener('input', e => {
@@ -37,15 +54,35 @@ $('sourceText').addEventListener('input', e => {
 });
 
 // Wstaw przykład - kuratorowany tekst dla wybranej kategorii.
-// Podwójna rola: pomoc demo + stały zestaw benchmarkowy (te same próbki
-// = porównywalność ewaluacji jakości między uruchomieniami).
+// Każde kolejne kliknięcie wpisuje INNY z dostępnych wariantów (rotacja
+// 2-3 przykładów per typ). Demonstracja dla pracownika że narzędzie radzi
+// sobie z różnorodnymi treściami, nie tylko jedną próbką.
+const exampleIndexByType = {};  // pamiętamy który wariant pokazujemy dla każdego typu
 $('exampleBtn').addEventListener('click', () => {
   const t = META.types.find(x => x.id === $('contentType').value);
-  if (!t || !t.example) return;
-  if ($('sourceText').value.trim() && !confirm('Zastąpić obecny tekst przykładem?')) return;
-  $('sourceText').value = t.example;
-  $('charCount').textContent = t.example.length;
+  if (!t) return;
+  const arr = (t.examples && t.examples.length) ? t.examples : (t.example ? [t.example] : []);
+  if (!arr.length) return;
+  if ($('sourceText').value.trim() && !confirm('Zastąpić obecny tekst kolejnym przykładem?')) return;
+
+  // rotacja: indeks +1 dla tego typu (modulo długość)
+  const prev = exampleIndexByType[t.id];
+  let next = prev == null ? 0 : (prev + 1) % arr.length;
+  exampleIndexByType[t.id] = next;
+  const picked = arr[next];
+
+  $('sourceText').value = picked;
+  $('charCount').textContent = picked.length;
   $('sourceText').focus();
+
+  // Subtelna informacja w button tekście jeśli jest więcej niż jeden wariant
+  if (arr.length > 1) {
+    const btn = $('exampleBtn');
+    const original = 'Wstaw przykład ↧';
+    btn.textContent = `Przykład ${next + 1}/${arr.length} - kliknij dla kolejnego ↻`;
+    clearTimeout(window._exampleBtnTimer);
+    window._exampleBtnTimer = setTimeout(() => { btn.textContent = original; }, 3500);
+  }
 });
 
 // ── Tłumaczenie ──────────────────────────────────────────────────────────────
@@ -59,7 +96,9 @@ $('translateBtn').addEventListener('click', async () => {
     contentType: $('contentType').value,
     lang: $('lang').value,
     customInstruction: $('customInstruction').value,
-    useGlossary: $('useGlossary').checked,
+    // Glosariusz zawsze on - filter pokazuje tylko terminy faktycznie obecne w tekscie,
+    // wiec dla "marketingowe" z 0 terminami nic sie nie wstrzykuje. Niepotrzebny user toggle.
+    useGlossary: true,
     compare: $('compare').checked
   };
 
@@ -105,10 +144,20 @@ function renderResult(data, payload) {
 
   $('ctxOut').textContent = data.contextual;
 
-  // Słownik - które terminy branżowe wymusiliśmy
+  // Widget "Uwzgledniono" - co AI wzielo pod uwage (zbiorczo zamiast rozproszenia)
+  renderAppliedContext(data);
+
+  // Słownik militarny - które terminy fleksyjne dopasowano
   const m = $('matched');
+  let matchedHtml = '';
   if (data.matchedTerms && data.matchedTerms.length) {
-    m.innerHTML = `Zastosowano słownik militarny dla: <b>${data.matchedTerms.join('</b>, <b>')}</b>`;
+    matchedHtml += `<div>Słownik branżowy: <b>${data.matchedTerms.join('</b>, <b>')}</b></div>`;
+  }
+  if (data.keptTerms && data.keptTerms.length) {
+    matchedHtml += `<div style="margin-top:6px">Zachowano bez tłumaczenia (akronimy/standardy): <b>${data.keptTerms.join('</b>, <b>')}</b></div>`;
+  }
+  if (matchedHtml) {
+    m.innerHTML = matchedHtml;
     m.classList.remove('hidden');
   } else m.classList.add('hidden');
 
@@ -122,6 +171,50 @@ function renderResult(data, payload) {
     $('genWrap').classList.add('hidden');
     grid.classList.add('solo');
   }
+}
+
+// Widget "Uwzgledniono" + UI char budget warning
+function renderAppliedContext(data) {
+  const host = $('appliedContext');
+  if (!host) return;
+  const ctx = data.appliedContext;
+  if (!ctx) { host.classList.add('hidden'); return; }
+
+  const chips = [];
+  chips.push(`<span class="chip"><span class="chip-mark">✓</span>typ: <b>${escapeHtml(ctx.contentTypeLabel)}</b></span>`);
+  chips.push(`<span class="chip"><span class="chip-mark">✓</span>rynek: <b>${escapeHtml(ctx.marketLabel)}</b></span>`);
+  if (ctx.glossaryCount > 0) {
+    chips.push(`<span class="chip"><span class="chip-mark">✓</span>słownik: <b>${ctx.glossaryCount} ${plural(ctx.glossaryCount, 'termin', 'terminy', 'terminów')}</b></span>`);
+  }
+  if (ctx.keepAsIsCount > 0) {
+    chips.push(`<span class="chip"><span class="chip-mark">✓</span>akronimy zachowane: <b>${ctx.keepAsIsCount}</b></span>`);
+  }
+  if (ctx.reviewFlag) {
+    chips.push(`<span class="chip warn"><span class="chip-mark">⚠</span>flaga: <b>wymaga weryfikacji</b></span>`);
+  }
+
+  // UI char budget - tylko dla systemowe_ui
+  let budgetHtml = '';
+  if (data.uiCharBudget) {
+    const b = data.uiCharBudget;
+    const cls = b.status === 'ok' ? 'ok' : b.status === 'warn' ? 'warn' : 'over';
+    const icon = b.status === 'ok' ? '✓' : b.status === 'warn' ? '⚠' : '✗';
+    const msg = b.status === 'ok'
+      ? `mieści się w limicie UI (cel ${b.target} znaków)`
+      : b.status === 'warn'
+      ? `długie dla UI - może obciąć się w przycisku (cel ${b.target}, max ${b.hardMax})`
+      : `za długie dla UI - rozwali layout (limit ${b.hardMax})`;
+    budgetHtml = `<div class="char-budget ${cls}"><span class="chip-mark">${icon}</span>długość <b>${b.length}/${b.target}</b> znaków - ${msg}</div>`;
+  }
+
+  host.innerHTML = `<div class="applied-label">Uwzględniono</div><div class="applied-chips">${chips.join('')}</div>${budgetHtml}`;
+  host.classList.remove('hidden');
+}
+
+function plural(n, one, few, many) {
+  if (n === 1) return one;
+  if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return few;
+  return many;
 }
 
 // ── Ocena jakości (prompt-as-judge + back-translation) ───────────────────────
@@ -276,7 +369,7 @@ $('batchBtn').addEventListener('click', async () => {
 
   const contentType = $('contentType').value;
   const lang = $('lang').value;
-  const useGlossary = $('batchGlossary').checked;
+  const useGlossary = true;  // zawsze on (filter)
 
   $('batchBtn').disabled = true;
   $('batchProgress').classList.remove('hidden');
@@ -427,7 +520,7 @@ $('docBtn').addEventListener('click', async () => {
   const chunks = chunkDocument(text);
   const contentType = $('contentType').value;
   const lang = $('lang').value;
-  const useGlossary = $('docGlossary').checked;
+  const useGlossary = true;  // zawsze on (filter)
 
   $('docBtn').disabled = true;
   $('docProgress').classList.remove('hidden');

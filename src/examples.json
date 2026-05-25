@@ -1,20 +1,68 @@
 {
   "_meta": {
-    "purpose": "Kuratorowane przykłady treści per typ - PODWÓJNA rola: (1) pomoc demonstracyjna dla pracownika nietechnicznego, (2) stały zestaw benchmarkowy do ewaluacji jakości (te same próbki = porównywalność wyników między uruchomieniami).",
-    "design": "Każdy przykład celowo zawiera terminy z glossary.json LUB konstrukcje gdzie generyczny translator pada (dwuznaczność, konwencja rynku, ryzyko prawne). To NIE są losowe teksty - to próbki dobrane tak, by demonstrowały przewagę warstwy kontekstowej.",
-    "scope": "Świadomie statyczne, nie generowane AI. Zadanie to narzędzie do TŁUMACZENIA, nie generowania treści - kuratorowany zestaw to pomoc demo i benchmark, nie druga funkcja produktu."
+    "purpose": "Kuratorowane przykłady treści per typ - PODWÓJNA rola: (1) pomoc demonstracyjna dla pracownika nietechnicznego (rotuje losowo z 2-3 wariantów żeby pokazać różnorodność), (2) stały zestaw benchmarkowy do ewaluacji jakości.",
+    "design": "Każdy przykład celowo zawiera terminy z glossary.json LUB keepAsIs LUB konstrukcje gdzie generic pada (konwencja rynku, ryzyko prawne, akronimy branżowe). To NIE są losowe teksty - to próbki dobrane tak, by demonstrowały przewagę warstwy kontekstowej.",
+    "scope": "Świadomie statyczne. Zadanie to narzędzie do TŁUMACZENIA, nie generowania treści. Kuratorowany zestaw to pomoc demo i benchmark.",
+    "rotation": "Pole 'examples' to array - app.js losuje jeden przy każdym kliku 'Wstaw przykład'. Pole 'example' to wybór domyślny (pierwszy z array, dla wstecznej zgodności)."
   },
   "examples": {
-    "produktowe_dlugie": "Karabinek pneumatyczny zasilany sprężonym powietrzem (PCP) o kalibrze 5,5 mm. Składana kolba z regulowaną stopką, magazynek rotacyjny na 10 śrutów oraz lufa o długości 600 mm zapewniają wysoką celność na dystansie do 50 metrów. Konstrukcja oparta na sprawdzonym zamku cylindrycznym, z fabrycznie zamontowaną szyną montażową pod celownik optyczny.",
-    "produktowe_krotkie": "Tabela rozmiarów kabury udowej:\nRozmiar S - obwód uda 45-52 cm\nRozmiar M - obwód uda 52-60 cm\nRozmiar L - obwód uda 60-68 cm\nMateriał: Cordura 1000D. Pasuje do pistoletów kompaktowych i pełnowymiarowych.",
-    "seo": "Repliki ASG karabinków szturmowych - sklep z replikami do airsoftu. Magazynki, kolby, akcesoria taktyczne.",
-    "poradniki": "Jak dobrać pierwszą replikę ASG dla początkującego? Zacznij od karabinka typu AEG - jest niezawodny i prosty w obsłudze. Zwróć uwagę na pojemność magazynka oraz materiał kolby: wersje z polimeru są lżejsze, metalowe trwalsze. Pamiętaj, że replika ASG nie jest bronią palną, ale na strzelnicy obowiązują te same zasady bezpieczeństwa.",
-    "marketingowe": "Tylko w ten weekend! Do każdego karabinka ASG magazynek dodatkowy oraz 2000 kulek BB gratis. Wyposaż się przed sezonem - oferta ważna do niedzieli lub wyczerpania zapasów.",
-    "systemowe_ui": "Dodaj do koszyka",
-    "informacyjne": "Czy do zakupu repliki ASG potrzebne są uprawnienia? Repliki ASG nie są bronią palną w rozumieniu ustawy, dlatego do ich zakupu nie są wymagane pozwolenia. Sprzedaż prowadzimy wyłącznie osobom pełnoletnim.",
-    "prawne": "§7. Odstąpienie od umowy. 1. Konsument może odstąpić od umowy w terminie 14 dni bez podania przyczyny, zgodnie z ustawą z dnia 30 maja 2014 r. o prawach konsumenta (Dz.U. 2014 poz. 827). 2. Prawo odstąpienia nie przysługuje w odniesieniu do amunicji oraz towarów dostarczanych w zapieczętowanym opakowaniu, których po otwarciu nie można zwrócić ze względów bezpieczeństwa.",
-    "infografiki": "3 KROKI DO CELNEGO STRZAŁU\n1. Stabilna postawa\n2. Kontrola oddechu\n3. Płynne ściągnięcie języka spustowego",
-    "ogolne": "Zestaw zawiera karabinek, dwa magazynki, ładowarkę oraz instrukcję obsługi w języku polskim.",
-    "wlasny_prompt": "Wpisz własny tekst albo skorzystaj z przykładu z innej kategorii."
+    "produktowe_dlugie": [
+      "Karabinek pneumatyczny zasilany sprężonym powietrzem (PCP) o kalibrze 5,5 mm. Składana kolba z regulowaną stopką, magazynek rotacyjny na 10 śrutów oraz lufa o długości 600 mm zapewniają wysoką celność na dystansie do 50 metrów. Konstrukcja oparta na sprawdzonym zamku cylindrycznym, z fabrycznie zamontowaną szyną Picatinny pod celownik optyczny.",
+      "Kamizelka taktyczna typu plate carrier z systemem MOLLE na całej powierzchni przedniej i tylnej. Materiał: Cordura 500D, regulacja w pasie i ramionach, kieszenie wewnętrzne na płyty balistyczne w rozmiarze SAPI. Konstrukcja kompatybilna z kompletem EDC oraz akcesoriami pierwszej pomocy IFAK. Wkładki balistyczne sprzedawane osobno.",
+      "Replika ASG karabinka AR-15 napędzana elektrycznie (AEG) w kalibrze 6 mm BB. Korpus z polimeru wzmacnianego włóknem szklanym, lufa precyzyjna 363 mm, magazynek hi-cap na 300 kulek. Prędkość wylotowa ok. 380 fps. W zestawie ładowarka i akumulator NiMH 8.4V. Replika nie jest bronią palną w rozumieniu ustawy o broni i amunicji."
+    ],
+    "produktowe_krotkie": [
+      "Tabela rozmiarów kabury udowej:\nRozmiar S - obwód uda 45-52 cm\nRozmiar M - obwód uda 52-60 cm\nRozmiar L - obwód uda 60-68 cm\nMateriał: Cordura 1000D. Pasuje do pistoletów kompaktowych i pełnowymiarowych Glock, CZ, SIG.",
+      "Specyfikacja techniczna magazynka:\n- Pojemność: 30 naboi\n- Kaliber: 5.56x45 NATO / .223 Rem\n- Materiał: stal hartowana, sprężyna ze stali nierdzewnej\n- Kompatybilność: platforma AR-15 (mil-spec)\n- Waga (pusty): 113 g",
+      "Zawartość zestawu IFAK:\n1x opaska uciskowa CAT (gen 7)\n2x bandaż uciskowy\n1x folia NRC\n1x rękawice nitrylowe (para)\n1x nożyczki ratunkowe\n1x marker permanentny\n1x torba MOLLE (rozmiar kompaktowy)"
+    ],
+    "seo": [
+      "Repliki ASG karabinków szturmowych - sklep z replikami do airsoftu. Magazynki, kolby, akcesoria taktyczne.",
+      "Plate carrier z systemem MOLLE - kamizelki taktyczne, płyty balistyczne, akcesoria EDC. Sprzęt dla służb mundurowych i fanów strzelectwa sportowego.",
+      "Amunicja sportowa 9x19 i .22LR - hurtownia amunicji do strzelectwa dynamicznego. Wymagane pozwolenie na broń, dostawa wyłącznie do osób uprawnionych."
+    ],
+    "poradniki": [
+      "Jak dobrać pierwszą replikę ASG dla początkującego? Zacznij od karabinka typu AEG - jest niezawodny i prosty w obsłudze. Zwróć uwagę na pojemność magazynka oraz materiał kolby: wersje z polimeru są lżejsze, metalowe trwalsze. Pamiętaj, że replika ASG nie jest bronią palną, ale na strzelnicy obowiązują te same zasady bezpieczeństwa.",
+      "Konfiguracja plate carriera dla nowicjusza - od czego zacząć? Po pierwsze wybierz rozmiar płyt (SAPI / E-SAPI / Shooter Cut). Po drugie zaplanuj rozkład kieszeni MOLLE: ładownice na magazynki z przodu, IFAK po stronie nie-dominantej, hydration pack z tyłu. Po trzecie testuj w ruchu - statyczne dopasowanie nie zawsze odpowiada rzeczywistym warunkom.",
+      "Czyszczenie broni krótkiej po sesji na strzelnicy - krok po kroku. Rozbierz pistolet zgodnie z instrukcją producenta (zwykle: zamek, lufa, sprężyna powrotna, ramka). Przetrzyj lufę szczotką brązową nasączoną solwentem, następnie suchymi patchami aż przestaną się brudzić. Nasmaruj prowadnice zamka odpowiednim olejem - punktowo, nie zalewaj. Złóż i sprawdź działanie na sucho."
+    ],
+    "marketingowe": [
+      "Tylko w ten weekend! Do każdego karabinka ASG magazynek dodatkowy oraz 2000 kulek BB gratis. Wyposaż się przed sezonem - oferta ważna do niedzieli lub wyczerpania zapasów.",
+      "BLACK WEEK w Militarii. Plate carriery -30%, akcesoria MOLLE -25%, repliki ASG -20%. Tylko teraz: do każdego zamówienia powyżej 500 zł dorzucamy zestaw EDC w prezencie. Promocja do wyczerpania zapasów.",
+      "Nowa kolekcja kabur taktycznych już dostępna. Konstrukcja z Kydexu, retencja regulowana, kompatybilna z Glock, CZ P-10 oraz SIG P320. Wybór noszenia: OWB, IWB, udowe. Darmowa dostawa od 200 zł."
+    ],
+    "systemowe_ui": [
+      "Dodaj do koszyka",
+      "Sprawdź dostępność",
+      "Zaloguj się aby kupić",
+      "Powiadom o dostępności",
+      "Wymaga weryfikacji wieku (18+)",
+      "Produkt tymczasowo niedostępny",
+      "Kontynuuj zakupy"
+    ],
+    "informacyjne": [
+      "Czy do zakupu repliki ASG potrzebne są uprawnienia? Repliki ASG nie są bronią palną w rozumieniu ustawy, dlatego do ich zakupu nie są wymagane pozwolenia. Sprzedaż prowadzimy wyłącznie osobom pełnoletnim.",
+      "Jakie są metody dostawy? Wysyłamy kurierem InPost, DPD oraz przez Paczkomaty. Standardowy czas dostawy to 1-3 dni robocze. Amunicja oraz broń pneumatyczna powyżej 17J wysyłana jest wyłącznie po weryfikacji uprawnień - czas realizacji do 5 dni roboczych.",
+      "Jak korzystać z programu lojalnościowego? Każde zakupy powyżej 100 zł to punkty na koncie klienta (1 pkt = 1 zł). Punkty można wymieniać na rabaty (1 pkt = 0,05 zł zniżki) lub na produkty z katalogu nagród. Punkty ważne 12 miesięcy od daty naliczenia."
+    ],
+    "prawne": [
+      "§7. Odstąpienie od umowy. 1. Konsument może odstąpić od umowy w terminie 14 dni bez podania przyczyny, zgodnie z ustawą z dnia 30 maja 2014 r. o prawach konsumenta (Dz.U. 2014 poz. 827). 2. Prawo odstąpienia nie przysługuje w odniesieniu do amunicji oraz towarów dostarczanych w zapieczętowanym opakowaniu, których po otwarciu nie można zwrócić ze względów bezpieczeństwa.",
+      "§3. Sprzedaż broni i amunicji. 1. Sprzedaż broni palnej, amunicji oraz broni pneumatycznej o energii kinetycznej pocisku powyżej 17 J prowadzona jest wyłącznie na podstawie aktualnego pozwolenia na broń wydanego zgodnie z ustawą z dnia 21 maja 1999 r. o broni i amunicji (Dz.U. 1999 nr 53 poz. 549). 2. Sprzedaż replik ASG, broni pneumatycznej do 17 J oraz akcesoriów taktycznych prowadzona jest wyłącznie osobom, które ukończyły 18 rok życia.",
+      "§9. Ochrona danych osobowych. 1. Administratorem danych osobowych zbieranych w ramach sklepu jest [nazwa sklepu] z siedzibą w [adres]. 2. Dane przetwarzane są zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO). 3. Klient ma prawo dostępu do swoich danych, sprostowania, usunięcia oraz wniesienia sprzeciwu wobec ich przetwarzania."
+    ],
+    "infografiki": [
+      "3 KROKI DO CELNEGO STRZAŁU\n1. Stabilna postawa\n2. Kontrola oddechu\n3. Płynne ściągnięcie języka spustowego",
+      "ZESTAW IFAK - 5 ELEMENTÓW KRYTYCZNYCH\n• Opaska uciskowa CAT\n• Bandaż uciskowy\n• Folia NRC\n• Rękawice nitrylowe\n• Marker permanentny",
+      "MOLLE - JAK MOCOWAĆ AKCESORIA\nKrok 1: Wsuń pasek przez taśmę MOLLE\nKrok 2: Przepleć przez taśmę akcesorium\nKrok 3: Zatrzaśnij zatrzask\nGotowe. Akcesorium trzyma się stabilnie."
+    ],
+    "ogolne": [
+      "Zestaw zawiera karabinek, dwa magazynki, ładowarkę oraz instrukcję obsługi w języku polskim.",
+      "Wszystkie produkty objęte są 24-miesięczną gwarancją producenta. W przypadku reklamacji prosimy o kontakt mailowy.",
+      "Sklep czynny od poniedziałku do piątku w godzinach 9-18. W soboty 10-14. Zamówienia online realizujemy 7 dni w tygodniu."
+    ],
+    "wlasny_prompt": [
+      "Wpisz własny tekst albo skorzystaj z przykładu z innej kategorii.",
+      "Tutaj wkleisz dowolny tekst. Powyżej wpisz instrukcję dla tłumacza, np.: 'Tłumacz bardzo formalnie, zachowaj wszystkie liczby, nie używaj skrótów'."
+    ]
   }
 }
