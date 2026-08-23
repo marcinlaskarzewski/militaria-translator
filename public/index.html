@@ -3,264 +3,356 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Militaria.pl Translator - tłumacz e-commerce świadomy rynku</title>
-<meta name="description" content="Prototyp tłumacza e-commerce PL na 9 języków. Świadomy typu treści i konwencji rynku. Glosariusz branżowy + sędzia jakości.">
+<title>Militaria.pl AI Translator — tłumaczenia e-commerce z kontekstem rynku</title>
+<meta name="description" content="Prototyp narzędzia do tłumaczeń e-commerce na 9 rynków. Uwzględnia rodzaj treści, terminologię branżową, konwencje lokalne i niezależną ocenę jakości.">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+<div class="site-shell">
 
-<!-- ════════════════════════════════════════════════════════════════
-     HERO - landing dla rekrutera (5 sekund: o co tu chodzi)
-     ════════════════════════════════════════════════════════════════ -->
-<header class="hero">
-  <div class="hero-inner">
-    <div class="hero-meta">
-      <span class="dot"></span>
-      <span>prototyp · Militaria.pl · zadanie rekrutacyjne</span>
+  <nav class="topbar" aria-label="Nawigacja">
+    <a class="product-mark" href="#top" aria-label="Militaria AI Translator — początek strony">
+      <span class="mark-icon">M</span>
+      <span>
+        <strong>AI Translator</strong>
+        <small>dla Militaria.pl</small>
+      </span>
+    </a>
+    <div class="topbar-meta">
+      <span class="status-dot"></span>
+      <span>prototyp produktu</span>
+      <span class="topbar-separator"></span>
+      <span>9 rynków</span>
     </div>
+  </nav>
 
-    <h1>Tłumacz dla sklepu Militaria.pl.<br>
-        <span class="accent">9 języków, 11 typów treści, 9 wariantów rynkowych.</span></h1>
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-meta">
+          <span class="dot"></span>
+          <span>Tłumaczenie kontekstowe dla e-commerce</span>
+        </div>
 
-    <p class="hero-sub">
-      Zwykły translator daje "Add to cart" tam gdzie UK używa <b>"Add to Basket"</b>.
-      Tłumaczy "pozwolenie na broń" jako "Waffenschein" (do noszenia)
-      zamiast <b>"Waffenbesitzkarte"</b> (do kupna) - to inne dokumenty prawne.
-      Przy 9 językach i tysiącach produktów pracownik tego nie wyłapie.
-    </p>
+        <h1>
+          Tłumaczenia, które rozumieją
+          <span class="accent">więcej niż język.</span>
+        </h1>
 
-    <div class="hero-cta">
-      <a href="#app" class="btn primary">
-        Wypróbuj <span class="arrow">→</span>
-      </a>
-    </div>
+        <p class="hero-sub">
+          Narzędzie dobiera sposób tłumaczenia do <b>rodzaju treści, rynku docelowego i terminologii branżowej</b>.
+          Dzięki temu interfejs, opisy produktów, marketing i treści prawne nie są traktowane jak ten sam tekst.
+        </p>
 
-    <div class="proofs-label">4 przykłady z testów 22.05.2026</div>
+        <div class="hero-cta">
+          <a href="#app" class="btn primary">
+            Przejdź do tłumacza <span class="arrow">↓</span>
+          </a>
+          <a href="#examples" class="btn secondary">
+            Zobacz przykłady
+          </a>
+        </div>
 
-    <div class="proofs">
-      <article class="proof">
-        <div class="proof-head">
-          <span>systemowe / UI</span>
-          <span class="lang">PL → EN-UK</span>
+        <div class="hero-signals" aria-label="Najważniejsze możliwości">
+          <span>9 rynków</span>
+          <span>11 typów treści</span>
+          <span>glosariusz branżowy</span>
+          <span>niezależna ocena jakości</span>
         </div>
-        <div class="proof-src">Dodaj do koszyka</div>
-        <div class="proof-row generic">
-          <span class="who">Generic</span>
-          <span class="text">Add to cart</span>
-        </div>
-        <div class="proof-row ctx">
-          <span class="who">Nasze</span>
-          <span class="text">Add to Basket</span>
-        </div>
-        <div class="proof-note">
-          <b>Konwencja UI rynku.</b> "Cart" to amerykański default. UK używa "Basket" (Amazon UK, John Lewis). Profil rynku EN-UK to wymusza.
-        </div>
-      </article>
-
-      <article class="proof">
-        <div class="proof-head">
-          <span>prawne</span>
-          <span class="lang">PL → DE</span>
-        </div>
-        <div class="proof-src">Pozwolenie na broń wydane przez komendę policji.</div>
-        <div class="proof-row generic">
-          <span class="who">Generic</span>
-          <span class="text">Waffenschein</span>
-        </div>
-        <div class="proof-row ctx">
-          <span class="who">Nasze</span>
-          <span class="text">Waffenbesitzkarte</span>
-        </div>
-        <div class="proof-note">
-          <b>Precyzja prawno-broniowa DE.</b> Waffenschein = pozwolenie na noszenie krótkiej broni publicznie. Waffenbesitzkarte = posiadanie do kupna. Generic myli dwa różne dokumenty.
-        </div>
-      </article>
-
-      <article class="proof">
-        <div class="proof-head">
-          <span>marketingowe</span>
-          <span class="lang">PL → DE</span>
-        </div>
-        <div class="proof-src">Zabij konkurencję na strzelnicy!</div>
-        <div class="proof-row generic">
-          <span class="who">Generic</span>
-          <span class="text">Schlag die Konkurrenz!</span>
-        </div>
-        <div class="proof-row ctx">
-          <span class="who">Nasze</span>
-          <span class="text">Überzeugen Sie auf dem Schießstand.</span>
-        </div>
-        <div class="proof-note">
-          <b>Respekt Waffengesetz.</b> Agresywna retoryka o broni w DE jest prawnie problematyczna. Profil rynku DE łagodzi ton zachowując CTA.
-        </div>
-      </article>
-
-      <article class="proof">
-        <div class="proof-head">
-          <span>produktowe · glosariusz</span>
-          <span class="lang">PL → DE</span>
-        </div>
-        <div class="proof-src">Magazynek na 30 śrucin.</div>
-        <div class="proof-row generic">
-          <span class="who">Generic</span>
-          <span class="text">Magazin auf 30 Schrotkugeln</span>
-        </div>
-        <div class="proof-row ctx">
-          <span class="who">Nasze</span>
-          <span class="text">Magazin auf 30 Diabolo-Kugeln</span>
-        </div>
-        <div class="proof-note">
-          <b>Terminologia branżowa.</b> Schrotkugeln = śrut strzelniczy do strzelby. Diabolo-Kugeln = śruciny pneumatyczne. Glosariusz wymusza poprawny termin.
-        </div>
-      </article>
-    </div>
-  </div>
-</header>
-
-<!-- ════════════════════════════════════════════════════════════════
-     GLOWNA APKA
-     ════════════════════════════════════════════════════════════════ -->
-<main class="app" id="app">
-
-  <div class="section-label">tłumacz</div>
-  <h2 class="section-title">Wybierz tryb i przetestuj</h2>
-  <p class="section-sub">Trzy tryby: pojedynczy tekst (z porównaniem do zwykłego tłumacza), tryb masowy CSV, oraz długi dokument (automatycznie dzielony na sekcje).</p>
-
-  <div class="tabs">
-    <button class="tab active" data-mode="single">Pojedynczy tekst</button>
-    <button class="tab" data-mode="batch">Tryb masowy (CSV)</button>
-    <button class="tab" data-mode="doc">Długi dokument</button>
-  </div>
-
-  <section class="panel" id="form">
-    <div class="row">
-      <label>
-        <span>1. Rodzaj treści</span>
-        <select id="contentType"></select>
-        <small id="typeHint" class="hint"></small>
-      </label>
-      <label>
-        <span>2. Język docelowy</span>
-        <select id="lang"></select>
-      </label>
-    </div>
-
-    <label id="customWrap" class="hidden">
-      <span>Twoja instrukcja dla tłumacza</span>
-      <textarea id="customInstruction" rows="2" placeholder="Np. Tłumacz bardzo formalnie, zachowaj wszystkie liczby..."></textarea>
-    </label>
-
-    <div id="singleMode">
-      <label>
-        <span class="lbl-row">3. Tekst po polsku
-          <button type="button" id="exampleBtn" class="link-btn" title="Wstaw przykładowy tekst dla wybranej kategorii">Wstaw przykład ↧</button>
-        </span>
-        <textarea id="sourceText" rows="7" placeholder="Wklej tutaj polski tekst do przetłumaczenia... albo kliknij &quot;Wstaw przykład&quot; powyżej."></textarea>
-        <small class="hint"><span id="charCount">0</span> / 12000 znaków</small>
-      </label>
-
-      <div class="opts">
-        <label class="check"><input type="checkbox" id="compare" checked> Pokaż porównanie ze zwykłym tłumaczem</label>
-        <label class="check"><input type="checkbox" id="doEvaluate"> Oceń jakość (wolniejsze, +ocena ekspercka)</label>
-        <input type="hidden" id="useGlossary" value="true">
       </div>
 
-      <button id="translateBtn">Przetłumacz</button>
+      <aside class="hero-aside" aria-label="Jak działa tłumaczenie">
+        <div class="aside-kicker">Przed wygenerowaniem odpowiedzi</div>
+        <h2>System buduje kontekst tłumaczenia.</h2>
+        <div class="context-steps">
+          <div class="context-step">
+            <span class="step-no">01</span>
+            <div><b>Rozpoznaje typ treści</b><small>UI, produkt, marketing, treść prawna...</small></div>
+          </div>
+          <div class="context-step">
+            <span class="step-no">02</span>
+            <div><b>Stosuje profil rynku</b><small>lokalne słownictwo, ton i konwencje</small></div>
+          </div>
+          <div class="context-step">
+            <span class="step-no">03</span>
+            <div><b>Dodaje terminologię</b><small>tylko terminy obecne w tekście źródłowym</small></div>
+          </div>
+          <div class="context-step">
+            <span class="step-no">04</span>
+            <div><b>Może ocenić wynik</b><small>oddzielny przebieg modelu jako kontrola jakości</small></div>
+          </div>
+        </div>
+      </aside>
     </div>
+  </header>
 
-    <div id="batchMode" class="hidden">
-      <label>
-        <span class="lbl-row">3. Plik CSV
-          <button type="button" id="sampleCsvBtn" class="link-btn" title="Pobierz przykładowy plik CSV">Pobierz przykładowy CSV ↧</button>
-        </span>
-        <input type="file" id="csvFile" accept=".csv,text/csv">
-        <small class="hint">Plik CSV z jedną kolumną tekstu (pierwszy wiersz = nagłówek). Limit prototypu: <b>25 wierszy</b> - w produkcji byłaby kolejka zadań.</small>
-      </label>
-      <input type="hidden" id="batchGlossary" value="true">
-      <button id="batchBtn" disabled>Przetłumacz plik</button>
-      <div id="batchProgress" class="hidden">
-        <div class="progress-bar"><div id="progressFill"></div></div>
-        <small class="hint" id="progressText"></small>
+  <section class="proof-section" id="examples">
+    <div class="proof-section-inner">
+      <div class="section-label">Przykłady</div>
+      <div class="proof-heading">
+        <div>
+          <h2>Gdzie kontekst robi różnicę.</h2>
+        </div>
+        <p>Cztery przypadki z testów pokazujące różnicę między tłumaczeniem ogólnym a wersją dopasowaną do rynku i rodzaju treści.</p>
+      </div>
+
+      <div class="proofs">
+        <article class="proof">
+          <div class="proof-head">
+            <span>Interfejs sklepu</span>
+            <span class="lang">PL → EN-UK</span>
+          </div>
+          <div class="proof-src">Dodaj do koszyka</div>
+          <div class="proof-row generic">
+            <span class="who">Tłumacz ogólny</span>
+            <span class="text">Add to cart</span>
+          </div>
+          <div class="proof-row ctx">
+            <span class="who">Kontekstowe</span>
+            <span class="text">Add to Basket</span>
+          </div>
+          <div class="proof-note">
+            <b>Konwencja lokalnego UI.</b> Wariant EN-UK preferuje „Basket”, zamiast automatycznie przejmować amerykańskie „Cart”.
+          </div>
+        </article>
+
+        <article class="proof">
+          <div class="proof-head">
+            <span>Treść prawna</span>
+            <span class="lang">PL → DE</span>
+          </div>
+          <div class="proof-src">Pozwolenie na broń wydane przez komendę policji.</div>
+          <div class="proof-row generic">
+            <span class="who">Tłumacz ogólny</span>
+            <span class="text">Waffenschein</span>
+          </div>
+          <div class="proof-row ctx">
+            <span class="who">Kontekstowe</span>
+            <span class="text">Waffenbesitzkarte</span>
+          </div>
+          <div class="proof-note">
+            <b>Precyzja terminologiczna.</b> Profil rynku rozróżnia pojęcia prawne, które w zwykłym tłumaczeniu mogą zostać potraktowane jako synonimy.
+          </div>
+        </article>
+
+        <article class="proof">
+          <div class="proof-head">
+            <span>Komunikacja marketingowa</span>
+            <span class="lang">PL → DE</span>
+          </div>
+          <div class="proof-src">Zabij konkurencję na strzelnicy!</div>
+          <div class="proof-row generic">
+            <span class="who">Tłumacz ogólny</span>
+            <span class="text">Schlag die Konkurrenz!</span>
+          </div>
+          <div class="proof-row ctx">
+            <span class="who">Kontekstowe</span>
+            <span class="text">Überzeugen Sie auf dem Schießstand.</span>
+          </div>
+          <div class="proof-note">
+            <b>Ton dopasowany do rynku.</b> Zamiast tłumaczyć metaforę słowo w słowo, system zachowuje intencję komunikatu i łagodzi agresywną retorykę.
+          </div>
+        </article>
+
+        <article class="proof">
+          <div class="proof-head">
+            <span>Opis produktu</span>
+            <span class="lang">PL → DE</span>
+          </div>
+          <div class="proof-src">Magazynek na 30 śrucin.</div>
+          <div class="proof-row generic">
+            <span class="who">Tłumacz ogólny</span>
+            <span class="text">Magazin auf 30 Schrotkugeln</span>
+          </div>
+          <div class="proof-row ctx">
+            <span class="who">Kontekstowe</span>
+            <span class="text">Magazin auf 30 Diabolo-Kugeln</span>
+          </div>
+          <div class="proof-note">
+            <b>Glosariusz branżowy.</b> Terminologia sprzętu jest podawana do modelu tylko wtedy, gdy dany termin faktycznie występuje w źródle.
+          </div>
+        </article>
       </div>
     </div>
-
-    <div id="docMode" class="hidden">
-      <label>
-        <span class="lbl-row">3. Dokument (regulamin, polityka, długi opis)
-          <button type="button" id="sampleDocBtn" class="link-btn" title="Pobierz przykładowy regulamin">Pobierz przykład ↧</button>
-        </span>
-        <input type="file" id="docFile" accept=".txt,text/plain">
-        <small class="hint">Plik <b>.txt</b>. Długi tekst (np. regulamin powyżej limitu 12000 znaków) zostanie automatycznie podzielony na sekcje (po §, paragrafach), przetłumaczony z zachowaniem spójności terminologii i złożony z powrotem. Word/PDF: patrz "dalszy rozwój" w README.</small>
-      </label>
-      <input type="hidden" id="docGlossary" value="true">
-      <button id="docBtn" disabled>Przetłumacz dokument</button>
-      <div id="docProgress" class="hidden">
-        <div class="progress-bar"><div id="docProgressFill"></div></div>
-        <small class="hint" id="docProgressText"></small>
-      </div>
-    </div>
-
-    <div id="error" class="error hidden"></div>
   </section>
 
-  <section id="docResults" class="panel hidden">
-    <div id="docReviewBanner" class="banner hidden"></div>
-    <div class="result-head">
-      <h2>Przetłumaczony dokument</h2>
+  <main class="app" id="app">
+    <div class="app-heading">
       <div>
-        <button class="copy" data-target="docOut">Kopiuj</button>
-        <button class="copy" id="downloadDoc">Pobierz .txt ↧</button>
+        <div class="section-label">Tłumacz</div>
+        <h2 class="section-title">Przetłumacz treść.</h2>
       </div>
+      <p class="section-sub">Wybierz rodzaj treści i rynek docelowy. Reguły rynku, kontekst i terminologia zostaną dobrane automatycznie.</p>
     </div>
-    <div id="docMeta" class="matched"></div>
-    <div id="docOut" class="out"></div>
-  </section>
 
-  <section id="batchResults" class="panel hidden">
-    <div class="result-head">
-      <h2>Wyniki tłumaczenia masowego</h2>
-      <button class="copy" id="downloadCsv">Pobierz CSV ↧</button>
+    <div class="tabs" role="tablist" aria-label="Tryb pracy">
+      <button class="tab active" data-mode="single" type="button">Pojedynczy tekst</button>
+      <button class="tab" data-mode="batch" type="button">Plik CSV</button>
+      <button class="tab" data-mode="doc" type="button">Dokument</button>
     </div>
-    <div id="batchTableWrap"></div>
-  </section>
 
-  <section id="results" class="hidden">
-    <div id="reviewBanner" class="banner hidden"></div>
+    <section class="panel workspace" id="form">
+      <div class="row">
+        <label>
+          <span class="field-label"><i>1</i> Rodzaj treści</span>
+          <select id="contentType"></select>
+          <small id="typeHint" class="hint"></small>
+        </label>
+        <label>
+          <span class="field-label"><i>2</i> Rynek docelowy</span>
+          <select id="lang"></select>
+          <small class="hint">Wybierz język i wariant rynku, dla którego ma powstać treść.</small>
+        </label>
+      </div>
 
-    <div class="result-grid">
-      <div class="panel result">
-        <div class="result-head">
-          <h2>Tłumaczenie kontekstowe</h2>
-          <button class="copy" data-target="ctxOut">Kopiuj</button>
+      <label id="customWrap" class="hidden">
+        <span class="field-label">Własna instrukcja</span>
+        <textarea id="customInstruction" rows="2" placeholder="Np. zachowaj formalny ton, wszystkie liczby i nazwy własne..."></textarea>
+      </label>
+
+      <div id="singleMode">
+        <label>
+          <span class="lbl-row">
+            <span class="field-label"><i>3</i> Tekst źródłowy</span>
+            <button type="button" id="exampleBtn" class="link-btn" title="Wstaw przykładowy tekst dla wybranej kategorii">Wstaw przykład</button>
+          </span>
+          <textarea id="sourceText" rows="7" placeholder="Wklej tekst po polsku albo skorzystaj z przykładu..."></textarea>
+          <small class="hint counter"><span id="charCount">0</span> / 12 000 znaków</small>
+        </label>
+
+        <div class="opts">
+          <label class="check">
+            <input type="checkbox" id="compare" checked>
+            <span><b>Porównaj z tłumaczeniem bez kontekstu</b><small>Zobacz obie wersje obok siebie.</small></span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="doEvaluate">
+            <span><b>Uruchom dodatkową ocenę jakości</b><small>Oddzielny przebieg modelu porówna oba wyniki.</small></span>
+          </label>
+          <input type="hidden" id="useGlossary" value="true">
         </div>
-        <div id="ctxOut" class="out"></div>
-        <div id="appliedContext" class="applied hidden"></div>
-        <div id="matched" class="matched hidden"></div>
+
+        <button id="translateBtn" class="action-btn">Przetłumacz</button>
       </div>
 
-      <div class="panel result" id="genWrap">
-        <div class="result-head">
-          <h2>Zwykły tłumacz <small>(dla porównania)</small></h2>
-          <button class="copy" data-target="genOut">Kopiuj</button>
+      <div id="batchMode" class="hidden">
+        <label>
+          <span class="lbl-row">
+            <span class="field-label"><i>3</i> Plik CSV</span>
+            <button type="button" id="sampleCsvBtn" class="link-btn" title="Pobierz przykładowy plik CSV">Pobierz przykład</button>
+          </span>
+          <input type="file" id="csvFile" accept=".csv,text/csv">
+          <small class="hint">Jedna kolumna tekstu, pierwszy wiersz jako nagłówek. W tej wersji demonstracyjnej przetwarzane jest maksymalnie <b>25 wierszy</b>.</small>
+        </label>
+        <input type="hidden" id="batchGlossary" value="true">
+        <button id="batchBtn" class="action-btn" disabled>Przetłumacz plik</button>
+        <div id="batchProgress" class="hidden progress-wrap">
+          <div class="progress-bar"><div id="progressFill"></div></div>
+          <small class="hint" id="progressText"></small>
         </div>
-        <div id="genOut" class="out muted"></div>
+      </div>
+
+      <div id="docMode" class="hidden">
+        <label>
+          <span class="lbl-row">
+            <span class="field-label"><i>3</i> Dokument tekstowy</span>
+            <button type="button" id="sampleDocBtn" class="link-btn" title="Pobierz przykładowy dokument">Pobierz przykład</button>
+          </span>
+          <input type="file" id="docFile" accept=".txt,text/plain">
+          <small class="hint">Plik <b>.txt</b>. Dłuższa treść zostanie automatycznie podzielona na logiczne sekcje, przetłumaczona i połączona z zachowaniem spójnej terminologii.</small>
+        </label>
+        <input type="hidden" id="docGlossary" value="true">
+        <button id="docBtn" class="action-btn" disabled>Przetłumacz dokument</button>
+        <div id="docProgress" class="hidden progress-wrap">
+          <div class="progress-bar"><div id="docProgressFill"></div></div>
+          <small class="hint" id="docProgressText"></small>
+        </div>
+      </div>
+
+      <div id="error" class="error hidden"></div>
+    </section>
+
+    <section id="docResults" class="panel result-panel hidden">
+      <div id="docReviewBanner" class="banner hidden"></div>
+      <div class="result-head">
+        <div>
+          <span class="result-kicker">Dokument</span>
+          <h2>Gotowe tłumaczenie</h2>
+        </div>
+        <div class="result-actions">
+          <button class="copy" data-target="docOut">Kopiuj</button>
+          <button class="copy" id="downloadDoc">Pobierz .txt</button>
+        </div>
+      </div>
+      <div id="docMeta" class="matched"></div>
+      <div id="docOut" class="out"></div>
+    </section>
+
+    <section id="batchResults" class="panel result-panel hidden">
+      <div class="result-head">
+        <div>
+          <span class="result-kicker">CSV</span>
+          <h2>Wyniki tłumaczenia masowego</h2>
+        </div>
+        <button class="copy" id="downloadCsv">Pobierz CSV</button>
+      </div>
+      <div id="batchTableWrap" class="table-scroll"></div>
+    </section>
+
+    <section id="results" class="hidden results-section">
+      <div id="reviewBanner" class="banner hidden"></div>
+
+      <div class="result-grid">
+        <div class="panel result result-contextual">
+          <div class="result-head">
+            <div>
+              <span class="result-kicker">Wersja rekomendowana</span>
+              <h2>Tłumaczenie kontekstowe</h2>
+            </div>
+            <button class="copy" data-target="ctxOut">Kopiuj</button>
+          </div>
+          <div id="ctxOut" class="out"></div>
+          <div id="appliedContext" class="applied hidden"></div>
+          <div id="matched" class="matched hidden"></div>
+        </div>
+
+        <div class="panel result" id="genWrap">
+          <div class="result-head">
+            <div>
+              <span class="result-kicker">Punkt odniesienia</span>
+              <h2>Tłumaczenie bez kontekstu</h2>
+            </div>
+            <button class="copy" data-target="genOut">Kopiuj</button>
+          </div>
+          <div id="genOut" class="out muted"></div>
+        </div>
+      </div>
+
+      <div id="evalBox" class="panel eval hidden">
+        <div class="result-head">
+          <div>
+            <span class="result-kicker">Kontrola jakości</span>
+            <h2>Niezależna ocena obu tłumaczeń</h2>
+          </div>
+        </div>
+        <p class="eval-intro">Ocena jest wykonywana w oddzielnym przebiegu modelu, bez informacji o tym, która wersja powstała z dodatkowym kontekstem.</p>
+        <div id="evalContent"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-row">
+      <div class="footer-brand">
+        <span class="mark-icon small">M</span>
+        <span><b>AI Translator</b><small>prototyp produktu dla Militaria.pl</small></span>
+      </div>
+      <div class="footer-meta">
+        silnik: Claude (Anthropic) <span>·</span> wynik przed publikacją powinien zostać zweryfikowany przez człowieka
       </div>
     </div>
-
-    <div id="evalBox" class="panel eval hidden">
-      <h2>Ocena jakości <small>(niezależny przebieg modelu - sędzia nie wie które tłumaczenie jest które)</small></h2>
-      <div id="evalContent"></div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="footer-row">
-    <div class="footer-meta">
-      prototyp rekrutacyjny <span>·</span> silnik: Claude (Anthropic) <span>·</span> tłumaczenie wymaga akceptacji człowieka
-    </div>
-  </div>
-</footer>
+  </footer>
+</div>
 
 <script src="/app.js"></script>
 </body>
