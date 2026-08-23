@@ -11,7 +11,7 @@ let META = { types: [], langs: [] };
     const r = await fetch('/api/meta');
     META = await r.json();
   } catch (e) {
-    showError('Nie można połączyć się z serwerem. Czy uruchomiono "node proxy.js"?');
+    showError('Nie udało się połączyć z usługą tłumaczenia. Spróbuj ponownie za chwilę.');
     return;
   }
   const ct = $('contentType');
@@ -38,14 +38,14 @@ function renderTypeHint(t) {
     return;
   }
   const ctxLine = t.glossaryDefault
-    ? 'Słownik branżowy aktywny - terminologia sprzętu będzie fachowa.'
-    : 'Treść ogólna - słownik aktywny tylko jeśli pojawi się termin militarny.';
+    ? 'Terminologia branżowa zostanie uwzględniona automatycznie.'
+    : 'Terminologia branżowa zostanie użyta tylko wtedy, gdy jest potrzebna.';
   const gi = META.glossaryInfo;
   if (!gi) { host.textContent = ctxLine; return; }
   // 2-linijkowy hint: status + skladniki (na nizszej linii w jasniejszym kolorze)
   host.innerHTML = ctxLine + ` <span class="hint-meta">` +
-    `Słownik: ${gi.termsCount} terminów (${gi.sampleTerms.slice(0, 3).join(', ')}...) ` +
-    `+ ${gi.keepAsIsCount} akronimów zachowanych dosłownie (${gi.sampleKeepAsIs.slice(0, 3).join(', ')}...).` +
+    `Baza terminologiczna: ${gi.termsCount} terminów (${gi.sampleTerms.slice(0, 3).join(', ')}...) ` +
+    `+ ${gi.keepAsIsCount} oznaczeń zachowywanych bez zmian (${gi.sampleKeepAsIs.slice(0, 3).join(', ')}...).` +
     `</span>`;
 }
 
@@ -78,8 +78,8 @@ $('exampleBtn').addEventListener('click', () => {
   // Subtelna informacja w button tekście jeśli jest więcej niż jeden wariant
   if (arr.length > 1) {
     const btn = $('exampleBtn');
-    const original = 'Wstaw przykład ↧';
-    btn.textContent = `Przykład ${next + 1}/${arr.length} - kliknij dla kolejnego ↻`;
+    const original = 'Wstaw przykład';
+    btn.textContent = `Przykład ${next + 1}/${arr.length} · pokaż kolejny`;
     clearTimeout(window._exampleBtnTimer);
     window._exampleBtnTimer = setTimeout(() => { btn.textContent = original; }, 3500);
   }
@@ -136,7 +136,7 @@ function renderResult(data, payload) {
   // Confidence banner - kiedy tłumaczenie wymaga człowieka
   const banner = $('reviewBanner');
   if (data.needsReview) {
-    banner.innerHTML = `<b>Wymaga weryfikacji człowieka:</b> ${data.reviewReason}. To tłumaczenie traktuj jako wstępne - przed publikacją sprawdź je z osobą znającą rynek/prawo.`;
+    banner.innerHTML = `<b>Wymaga dodatkowej weryfikacji:</b> ${data.reviewReason}. Przed publikacją sprawdź wynik z osobą znającą rynek lub lokalne regulacje.`;
     banner.classList.remove('hidden');
   } else {
     banner.classList.add('hidden');
@@ -151,10 +151,10 @@ function renderResult(data, payload) {
   const m = $('matched');
   let matchedHtml = '';
   if (data.matchedTerms && data.matchedTerms.length) {
-    matchedHtml += `<div>Słownik branżowy: <b>${data.matchedTerms.join('</b>, <b>')}</b></div>`;
+    matchedHtml += `<div>Uwzględniona terminologia: <b>${data.matchedTerms.join('</b>, <b>')}</b></div>`;
   }
   if (data.keptTerms && data.keptTerms.length) {
-    matchedHtml += `<div style="margin-top:6px">Zachowano bez tłumaczenia (akronimy/standardy): <b>${data.keptTerms.join('</b>, <b>')}</b></div>`;
+    matchedHtml += `<div style="margin-top:6px">Zachowano bez zmian: <b>${data.keptTerms.join('</b>, <b>')}</b></div>`;
   }
   if (matchedHtml) {
     m.innerHTML = matchedHtml;
@@ -181,16 +181,16 @@ function renderAppliedContext(data) {
   if (!ctx) { host.classList.add('hidden'); return; }
 
   const chips = [];
-  chips.push(`<span class="chip"><span class="chip-mark">✓</span>typ: <b>${escapeHtml(ctx.contentTypeLabel)}</b></span>`);
+  chips.push(`<span class="chip"><span class="chip-mark">✓</span>treść: <b>${escapeHtml(ctx.contentTypeLabel)}</b></span>`);
   chips.push(`<span class="chip"><span class="chip-mark">✓</span>rynek: <b>${escapeHtml(ctx.marketLabel)}</b></span>`);
   if (ctx.glossaryCount > 0) {
-    chips.push(`<span class="chip"><span class="chip-mark">✓</span>słownik: <b>${ctx.glossaryCount} ${plural(ctx.glossaryCount, 'termin', 'terminy', 'terminów')}</b></span>`);
+    chips.push(`<span class="chip"><span class="chip-mark">✓</span>terminologia: <b>${ctx.glossaryCount} ${plural(ctx.glossaryCount, 'termin', 'terminy', 'terminów')}</b></span>`);
   }
   if (ctx.keepAsIsCount > 0) {
-    chips.push(`<span class="chip"><span class="chip-mark">✓</span>akronimy zachowane: <b>${ctx.keepAsIsCount}</b></span>`);
+    chips.push(`<span class="chip"><span class="chip-mark">✓</span>oznaczenia zachowane: <b>${ctx.keepAsIsCount}</b></span>`);
   }
   if (ctx.reviewFlag) {
-    chips.push(`<span class="chip warn"><span class="chip-mark">⚠</span>flaga: <b>wymaga weryfikacji</b></span>`);
+    chips.push(`<span class="chip warn"><span class="chip-mark">⚠</span>status: <b>wymaga weryfikacji</b></span>`);
   }
 
   // UI char budget - tylko dla systemowe_ui
@@ -200,10 +200,10 @@ function renderAppliedContext(data) {
     const cls = b.status === 'ok' ? 'ok' : b.status === 'warn' ? 'warn' : 'over';
     const icon = b.status === 'ok' ? '✓' : b.status === 'warn' ? '⚠' : '✗';
     const msg = b.status === 'ok'
-      ? `mieści się w limicie UI (cel ${b.target} znaków)`
+      ? `mieści się w zalecanym limicie interfejsu (${b.target} znaków)`
       : b.status === 'warn'
-      ? `długie dla UI - może obciąć się w przycisku (cel ${b.target}, max ${b.hardMax})`
-      : `za długie dla UI - rozwali layout (limit ${b.hardMax})`;
+      ? `tekst jest dłuższy niż zalecany dla interfejsu (cel ${b.target}, maksimum ${b.hardMax})`
+      : `tekst przekracza bezpieczny limit dla elementu interfejsu (${b.hardMax})`;
     budgetHtml = `<div class="char-budget ${cls}"><span class="chip-mark">${icon}</span>długość <b>${b.length}/${b.target}</b> znaków - ${msg}</div>`;
   }
 
@@ -244,11 +244,11 @@ function renderEval(ev) {
     const win = j.verdict === 'kontekstowe';
     const tie = j.verdict === 'remis';
     html += `<div class="verdict ${win ? 'win' : tie ? 'tie' : ''}">
-      Werdykt sędziego: <b>${j.verdict === 'kontekstowe' ? 'tłumaczenie kontekstowe lepsze' : j.verdict === 'generyczne' ? 'zwykły tłumacz lepszy' : 'remis'}</b>
+      Wynik oceny: <b>${j.verdict === 'kontekstowe' ? 'wersja kontekstowa oceniona wyżej' : j.verdict === 'generyczne' ? 'wersja bez dodatkowego kontekstu oceniona wyżej' : 'remis'}</b>
       ${j.delta != null ? ` &nbsp;(różnica ocen ważonych: ${j.delta > 0 ? '+' : ''}${j.delta})` : ''}
       <br><small>${escapeHtml(j.rationale)}</small></div>`;
     const axes = [['wiernosc', 'Wierność'], ['terminologia', 'Terminologia'], ['ton', 'Ton'], ['konwencja', 'Konwencja rynku']];
-    html += `<table class="scores"><tr><th>Kryterium</th><th>Kontekstowe</th><th>Zwykły tłumacz</th></tr>`;
+    html += `<table class="scores"><tr><th>Kryterium</th><th>Kontekstowe</th><th>Bez kontekstu</th></tr>`;
     axes.forEach(([k, lbl]) => {
       const c = j.contextual.scores[k], g = j.generic.scores[k];
       html += `<tr><td>${lbl}</td><td class="${c >= g ? 'hi' : ''}">${c ?? '-'}</td><td class="${g > c ? 'hi' : ''}">${g ?? '-'}</td></tr>`;
@@ -256,17 +256,17 @@ function renderEval(ev) {
     html += `<tr><td><b>Wynik ważony</b></td><td class="${j.contextual.weighted >= j.generic.weighted ? 'hi' : ''}">${j.contextual.weighted ?? '-'}</td><td class="${j.generic.weighted > j.contextual.weighted ? 'hi' : ''}">${j.generic.weighted ?? '-'}</td></tr>`;
     html += `</table>`;
   } else if (j) {
-    html += `<div class="error">Sędzia niedostępny: ${escapeHtml(j.error || '')}</div>`;
+    html += `<div class="error">Ocena niedostępna: ${escapeHtml(j.error || '')}</div>`;
   }
 
   // Back-translation (tylko języki low-resource)
   const bt = ev.backTranslation;
   if (bt && bt.ok) {
     const riskColor = bt.risk === 'niskie' ? 'var(--ok)' : bt.risk === 'wysokie' ? 'var(--danger)' : 'var(--warn)';
-    html += `<div class="bt"><b>Test podwójnego tłumaczenia</b> (PL → język → PL, dla języków których nikt w firmie nie zweryfikuje gołym okiem):<br>
+    html += `<div class="bt"><b>Test tłumaczenia zwrotnego</b> (PL → język docelowy → PL; dodatkowa kontrola dla języków trudnych do zweryfikowania wewnętrznie):<br>
       Zgodność sensu: <b>${bt.consistency}/5</b> &nbsp;·&nbsp; ryzyko: <span style="color:${riskColor}">${bt.risk}</span>
       ${bt.note ? `<br>Uwaga: ${escapeHtml(bt.note)}` : ''}
-      <br><small style="color:var(--muted)">Tekst po powrocie do PL: "${escapeHtml(bt.backPl || '')}"</small></div>`;
+      <br><small style="color:var(--muted)">Wersja po tłumaczeniu zwrotnym: "${escapeHtml(bt.backPl || '')}"</small></div>`;
   }
   $('evalContent').innerHTML = html;
 }
@@ -405,7 +405,7 @@ $('batchBtn').addEventListener('click', async () => {
 function renderBatch(truncated, total) {
   $('batchResults').classList.remove('hidden');
   let html = '';
-  if (truncated) html += `<div class="banner" style="margin-bottom:14px"><b>Limit prototypu:</b> plik miał ${total} wierszy, przetworzono pierwsze ${BATCH_LIMIT}. W produkcji byłaby kolejka zadań bez limitu.</div>`;
+  if (truncated) html += `<div class="banner" style="margin-bottom:14px"><b>Limit wersji demonstracyjnej:</b> plik miał ${total} wierszy, przetworzono pierwsze ${BATCH_LIMIT}. W wersji produkcyjnej ten proces można przenieść do kolejki zadań.</div>`;
   html += '<table class="batch"><tr><th>#</th><th>Tekst PL</th><th>Tłumaczenie</th><th>Uwaga</th></tr>';
   batchResults.forEach((r, i) => {
     html += `<tr><td>${i + 1}</td><td>${escapeHtml(r.source)}</td>`;
@@ -556,7 +556,7 @@ $('docBtn').addEventListener('click', async () => {
   const banner = $('docReviewBanner');
   if (anyReview || failed) {
     banner.innerHTML = (failed ? '<b>Część sekcji nie przetłumaczona</b> - sprawdź dokument przed użyciem. ' : '') +
-      (anyReview ? `<b>Wymaga weryfikacji człowieka:</b> ${reviewReason}. Treść prawna - przed publikacją sprawdź z prawnikiem znającym rynek docelowy.` : '');
+      (anyReview ? `<b>Wymaga dodatkowej weryfikacji:</b> ${reviewReason}. Treść prawna - przed publikacją sprawdź z prawnikiem znającym rynek docelowy.` : '');
     banner.classList.remove('hidden');
   } else banner.classList.add('hidden');
 });
